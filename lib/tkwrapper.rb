@@ -63,6 +63,7 @@ module TkWrapper
   # classification of TkGrid
   class Grid
     attr_reader :container
+    attr_accessor :matrix
 
     def initialize(container, matrix = [])
       @container = container
@@ -110,9 +111,9 @@ module TkWrapper
     end
 
     def [](row_i, col_i)
-      return unless @matrix[row_i, col_i].is_a?(Cell)
+      return unless @matrix[row_i][col_i].is_a?(Cell)
 
-      @matrix[row_i, col_i]
+      @matrix[row_i][col_i]
     end
 
     def rows
@@ -148,45 +149,101 @@ module TkWrapper
 
   # easyfied handling of Tkk Entry
   class Entry
-    attr_accessor :label, :id
+    attr_accessor :id
+    attr_reader :entry, :label, :frame
 
     def initialize(parent)
-      @text = TkVariable.new
       @parent = parent
-      @entry = Tk::Tile::Entry.new(parent) { textvariable @text }
+      @frame = Tk::Tile::Frame.new(parent)
+      #@frame['padding'] = 5
+      #@frame['borderwidth'] = 1
+      #@frame['relief'] = 'sunken'
+      @entry = Tk::Tile::Entry.new(@frame) { textvariable TkVariable.new }
+      autoresize
       @label = nil
       @id = nil
     end
 
     def value=(value)
-      @text.value = value
+      @entry.textvariable.value = value
     end
 
     def value
-      @text.value
+      @entry.textvariable.value
     end
 
     def add_label(labeltext)
-      @label = Tk::Tile::Label.new(parent) { text labeltext }
+      @label = Tk::Tile::Label.new(@parent) { text labeltext }
+    end
+
+    def autoresize
+      @entry.textvariable.trace('write') { resize }
+    end
+
+    def create_dummy_label_with_same_size
+      label = Tk::Tile::Label.new(@frame)
+      label.text = value
+      label.place(relx: 0, rely: 0)
+      label.lower
+      @frame.update
+      label
+    end
+
+    def resize
+      label = create_dummy_label_with_same_size
+
+      add_size = 10
+      min_size = 80
+      max_size = @parent.winfo_width
+      new_size = [[min_size, label.winfo_width + add_size].max, max_size].min
+
+      label.destroy
+
+      @entry.grid(ipadx: new_size / 2)
     end
   end
 
   # easyfied building of uniform Forms
   class Form
+    attr_reader :grid
+
     def initialize(parent)
       @parent = parent
-      @entries = []
+      @elements = []
       @grid = Grid.new(parent)
     end
 
     def add_entry(id, labeltext: nil)
       entry = Entry.new(@parent)
       entry.id = id
-      entry.add_label(labeltext)
-      @entries.push(entry)
+      entry.add_label(labeltext) if labeltext
+      @elements.push(entry)
     end
 
     def build
+      @elements.each do |element|
+        case element
+        when Entry
+          @grid.add_row(create_entry_grid_row(element))
+        end
+      end
+
+      @grid.cols[1].weight = 1
+      @grid.each { |cell| cell.widget.grid sticky: 'nswe', padx: 2, pady: 2 }
+
+      @grid.build
     end
+
+    def create_entry_grid_row(entry)
+      entry.entry.width = 0
+      entry.entry.grid(ipadx: 58)
+      entry.label ? [entry.label, entry.frame] : [entry.frame, :right]
+    end
+  end
+
+  def configure_styles
+    Tk::Tile::Style.theme_use 'clam'
+    Tk::Tile::Style.configure('TEntry', { padding: 3 })
+    Tk::Tile::Style.configure('TLabel', { background: 'blue' })
   end
 end
