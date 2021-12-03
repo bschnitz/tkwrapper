@@ -10,6 +10,7 @@ class GridExample
 
   def initialize
     root = TkRoot.new
+    root.geometry('800x600')
 
     TkGrid.columnconfigure(root, 0, weight: 1)
     TkGrid.rowconfigure(root, 0, weight: 1)
@@ -20,10 +21,14 @@ class GridExample
     frame.grid padx: 10, pady: 10
     form = Form.new(frame)
 
-    form.add_entry(:title,      labeltext: 'Title:')
-    form.add_entry(:year,       labeltext: 'Year:')
-    form.add_entry(:categories, labeltext: 'Categories:')
-    form.add_entry(:other)
+    form.add_entry(
+      id: :title,
+      label: { type: :frame, text: 'Title' },
+      value: 'Die Geschichte vom Mönch'
+    )
+
+    form.add_entry(id: :year,       label: 'Year:')
+    form.add_entry(id: :categories, label: 'Categories:')
 
     form.build
 

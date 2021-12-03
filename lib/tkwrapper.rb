@@ -6,6 +6,21 @@ module TkWrapper
   require 'tk'
   require 'tkextlib/tile'
 
+  # used to be abled to define virtual methods in a class which is extended by
+  # this module
+  module VirtualMethods
+    # error thrown, when a virtual method is called
+    class VirtualMethodCalledError < RuntimeError
+      def initialize(name)
+        super("Virtual function '#{name}' called.")
+      end
+    end
+
+    def virtual(method)
+      define_method(method) { raise VirtualMethodCalledError, method }
+    end
+  end
+
   # Row or Col of a Grid
   module GridVector
     def initialize(grid, index)
@@ -147,19 +162,17 @@ module TkWrapper
     end
   end
 
-  # easyfied handling of Tkk Entry
+  # easyfied handling of Tkk Entry with autoresize
   class Entry
     # min_width: minimal width in pixel
     # add_width: width to add after determining width via autoresize
     attr_accessor :id, :min_width, :add_width
     attr_reader :entry, :label, :frame
 
-    def initialize(parent)
+    def initialize(parent, frame = nil)
       @parent = parent
-      @frame = Tk::Tile::Frame.new(parent)
+      @frame = frame || Tk::Tile::Frame.new(parent)
       @entry = Tk::Tile::Entry.new(@frame) { textvariable TkVariable.new }
-      @label = nil
-      @id = nil
       @min_width = 80
       @add_width = 0
     end
@@ -170,10 +183,6 @@ module TkWrapper
 
     def value
       @entry.textvariable.value
-    end
-
-    def add_label(labeltext)
-      @label = Tk::Tile::Label.new(@parent) { text labeltext }
     end
 
     def autoresize
@@ -210,6 +219,61 @@ module TkWrapper
     end
   end
 
+  class FormElement
+    extend VirtualMethods
+
+    def initialize(id: nil)
+      @id = id
+    end
+
+    virtual def matrix() end
+    virtual def value() end
+    virtual def value=() end
+  end
+
+  class FormEntry < FormElement
+    attr_reader :id
+
+    def initialize(parent, id: nil, value: '', label: nil)
+      super(id: id)
+      build(parent, value: value, label: label)
+    end
+
+    def build(parent, value: '', label: nil)
+      (@label, labelframe) = create_label(parent, label)
+      @entry = Entry.new(parent, labelframe)
+      @entry.value = value unless value.empty?
+      @entry.autoresize
+    end
+
+    def create_label(parent, options)
+      case options
+      in nil
+        nil
+      in String
+        [Tk::Tile::Label.new(parent) { text options }, nil]
+      in {type: :left, ** }
+        [Tk::Tile::Label.new(parent) { text options[:text] }, nil]
+      in {type: :frame, ** }
+        [nil, Tk::Tile::Labelframe.new(parent) { text options[:text] }]
+      end
+    end
+
+    def matrix
+      return [@entry.frame, :right] unless @label
+
+      [@label, @entry.frame]
+    end
+
+    def value
+      @entry.value
+    end
+
+    def value=(value)
+      @entry.value = value
+    end
+  end
+
   # easyfied building of uniform Forms
   class Form
     attr_reader :grid
@@ -220,20 +284,17 @@ module TkWrapper
       @grid = Grid.new(parent)
     end
 
-    def add_entry(id, labeltext: nil)
-      entry = Entry.new(@parent)
-      entry.id = id
-      entry.add_label(labeltext) if labeltext
-      entry.autoresize
-      @elements.push(entry)
+    def add_element(id, element)
+      @elements.push({ id: id, element: element })
+    end
+
+    def add_entry(id: nil, label: nil, value: '')
+      @elements.push(FormEntry.new(@parent, id: id, label: label, value: value))
     end
 
     def build
       @elements.each do |element|
-        case element
-        when Entry
-          @grid.add_row(create_entry_grid_row(element))
-        end
+        @grid.add_row(element.matrix)
       end
 
       @grid.cols[1].weight = 1
@@ -248,8 +309,9 @@ module TkWrapper
   end
 
   def configure_styles
-    Tk::Tile::Style.theme_use 'clam'
+    #Tk::Tile::Style.theme_use 'clam'
     Tk::Tile::Style.configure('TEntry', { padding: 3 })
+    Tk::Tile::Style.configure('TLabelframe', { padding: '5 0 5 5' })
     #Tk::Tile::Style.configure('TLabel', { background: 'blue' })
   end
 end
