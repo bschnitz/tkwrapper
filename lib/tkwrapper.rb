@@ -149,19 +149,19 @@ module TkWrapper
 
   # easyfied handling of Tkk Entry
   class Entry
-    attr_accessor :id
+    # min_width: minimal width in pixel
+    # add_width: width to add after determining width via autoresize
+    attr_accessor :id, :min_width, :add_width
     attr_reader :entry, :label, :frame
 
     def initialize(parent)
       @parent = parent
       @frame = Tk::Tile::Frame.new(parent)
-      #@frame['padding'] = 5
-      #@frame['borderwidth'] = 1
-      #@frame['relief'] = 'sunken'
       @entry = Tk::Tile::Entry.new(@frame) { textvariable TkVariable.new }
-      autoresize
       @label = nil
       @id = nil
+      @min_width = 80
+      @add_width = 0
     end
 
     def value=(value)
@@ -177,29 +177,36 @@ module TkWrapper
     end
 
     def autoresize
+      @frame.bind('Configure') { resize }
       @entry.textvariable.trace('write') { resize }
     end
 
-    def create_dummy_label_with_same_size
+    def create_dummy_label_with_same_size(&block)
       label = Tk::Tile::Label.new(@frame)
       label.text = value
       label.place(relx: 0, rely: 0)
       label.lower
       @frame.update
-      label
+      result = block.call(label)
+      label.destroy
+      result
+    end
+
+    def content_text_size_in_pixel
+      return 0 if value.empty?
+
+      create_dummy_label_with_same_size(&:winfo_width)
     end
 
     def resize
-      label = create_dummy_label_with_same_size
+      @entry.width = 0
 
-      add_size = 10
-      min_size = 80
-      max_size = @parent.winfo_width
-      new_size = [[min_size, label.winfo_width + add_size].max, max_size].min
+      content_width = content_text_size_in_pixel
+      max_width = @parent.winfo_width
+      new_width = [[@min_width, content_width + @add_width].max, max_width].min
 
-      label.destroy
-
-      @entry.grid(ipadx: new_size / 2)
+      # pad to both directions, so need to devide by 2
+      @entry.grid(ipadx: new_width / 2.0)
     end
   end
 
@@ -217,6 +224,7 @@ module TkWrapper
       entry = Entry.new(@parent)
       entry.id = id
       entry.add_label(labeltext) if labeltext
+      entry.autoresize
       @elements.push(entry)
     end
 
@@ -235,8 +243,6 @@ module TkWrapper
     end
 
     def create_entry_grid_row(entry)
-      entry.entry.width = 0
-      entry.entry.grid(ipadx: 58)
       entry.label ? [entry.label, entry.frame] : [entry.frame, :right]
     end
   end
@@ -244,6 +250,6 @@ module TkWrapper
   def configure_styles
     Tk::Tile::Style.theme_use 'clam'
     Tk::Tile::Style.configure('TEntry', { padding: 3 })
-    Tk::Tile::Style.configure('TLabel', { background: 'blue' })
+    #Tk::Tile::Style.configure('TLabel', { background: 'blue' })
   end
 end
