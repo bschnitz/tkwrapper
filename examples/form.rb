@@ -5,6 +5,13 @@ require 'tkextlib/tile'
 
 require_relative '../lib/tkwrapper'
 
+def configure_styles
+  #Tk::Tile::Style.theme_use 'clam'
+  Tk::Tile::Style.configure('TEntry', { padding: 3 })
+  Tk::Tile::Style.configure('TLabelframe', { padding: '5 0 5 5' })
+  #Tk::Tile::Style.configure('TLabel', { background: 'blue' })
+end
+
 class GridExample
   include TkWrapper
 
