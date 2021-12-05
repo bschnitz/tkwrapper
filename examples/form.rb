@@ -17,7 +17,7 @@ class GridExample
 
   def initialize
     root = TkRoot.new
-    root.geometry('800x600')
+    #root.geometry('800x600')
 
     TkGrid.columnconfigure(root, 0, weight: 1)
     TkGrid.rowconfigure(root, 0, weight: 1)
@@ -38,6 +38,9 @@ class GridExample
     form.add_entry(id: :categories, label: 'Categories:')
 
     form.build
+
+    #root.update
+    #puts frame.winfo_width
 
     Tk.mainloop
   end

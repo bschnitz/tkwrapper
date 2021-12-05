@@ -33,7 +33,7 @@ module TkWrapper
       end
 
       @grid.cols[1].weight = 1
-      @grid.each { |cell| cell.widget.grid sticky: 'nswe', padx: 2, pady: 2 }
+      @grid.each { |cell| cell.widget.grid sticky: 'nsw', padx: 2, pady: 2 }
 
       @grid.build
     end

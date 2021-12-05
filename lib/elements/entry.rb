@@ -5,6 +5,7 @@
 module TkWrapper
   require 'tk'
   require 'tkextlib/tile'
+  require_relative '../util/multi_bind'
 
   # easyfied handling of Tkk Entry with autoresize
   class Entry
@@ -30,7 +31,8 @@ module TkWrapper
     end
 
     def autoresize
-      @frame.bind('Configure') { resize }
+      @parent.class.include(MultiBind)
+      @parent.multi_bind('Configure') { resize }
       @entry.textvariable.trace('write') { resize }
     end
 
@@ -57,6 +59,10 @@ module TkWrapper
       content_width = content_text_size_in_pixel
       max_width = @parent.winfo_width
       new_width = [[@min_width, content_width + @add_width].max, max_width].min
+
+      puts value
+      puts new_width
+      puts max_width
 
       # pad to both directions, so need to devide by 2
       @entry.grid(ipadx: new_width / 2.0)
