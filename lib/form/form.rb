@@ -11,12 +11,12 @@ module TkWrapper
 
   # easyfied building of uniform Forms
   class Form
+    attr_accessor :parent
     attr_reader :grid
 
-    def initialize(parent)
-      @parent = parent
+    def initialize(childs: [])
       @elements = []
-      @grid = Grid.new(parent)
+      @childs = childs
     end
 
     def add_element(id, element)
@@ -27,7 +27,12 @@ module TkWrapper
       @elements.push(FormEntry.new(@parent, id: id, label: label, value: value))
     end
 
-    def build
+    def build(parent)
+      @parent = parent
+      @grid = Grid.new(parent)
+
+      create_elements_from_childs
+
       @elements.each do |element|
         @grid.add_row(element.matrix)
       end
@@ -38,15 +43,19 @@ module TkWrapper
       @grid.build
     end
 
+    def create_elements_from_childs
+      return if @childs.empty?
+
+      @childs.each do |child|
+        case child[:type]
+        when :entry
+          add_entry(**child.except(:type))
+        end
+      end
+    end
+
     def create_entry_grid_row(entry)
       entry.label ? [entry.label, entry.frame] : [entry.frame, :right]
     end
-  end
-
-  def configure_styles
-    #Tk::Tile::Style.theme_use 'clam'
-    Tk::Tile::Style.configure('TEntry', { padding: 3 })
-    Tk::Tile::Style.configure('TLabelframe', { padding: '5 0 5 5' })
-    #Tk::Tile::Style.configure('TLabel', { background: 'blue' })
   end
 end

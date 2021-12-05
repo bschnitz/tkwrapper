@@ -60,10 +60,6 @@ module TkWrapper
       max_width = @parent.winfo_width
       new_width = [[@min_width, content_width + @add_width].max, max_width].min
 
-      puts value
-      puts new_width
-      puts max_width
-
       # pad to both directions, so need to devide by 2
       @entry.grid(ipadx: new_width / 2.0)
     end
