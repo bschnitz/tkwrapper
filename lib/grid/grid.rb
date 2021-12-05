@@ -9,29 +9,29 @@ require_relative './col'
 module TkWrapper
   require 'tk'
   require 'tkextlib/tile'
+  require_relative '../elements/widget'
 
   # classification of TkGrid
-  class Grid
-    attr_reader :container
-    attr_accessor :matrix
+  class Grid < Widget
+    attr_reader :parent, :matrix
 
-    def initialize(container, matrix = [])
-      @container = container
-      container.grid column: 0, row: 0, sticky: 'nsew'
-      self.matrix = matrix
+    def initialize(config: {}, childs: [])
+      super(config: config)
+      self.matrix = childs
     end
 
-    def build
+    def build(parent)
+      @parent = parent
+      configure(@config)
       each do |cell|
         init_colspan(cell)
         init_rowspan(cell)
-        cell.build
+        cell.build(parent)
       end
     end
 
-    def matrix=(matrix, build: true)
+    def matrix=(matrix)
       @matrix = create_cells(matrix)
-      self.build if build
     end
 
     def add_row(row, build: false)
@@ -55,9 +55,9 @@ module TkWrapper
     end
 
     def create_cell(content, row_i, col_i)
-      return content unless content.is_a?(TkObject)
+      return content unless content.is_a?(Widget)
 
-      Cell.new(content, self, row_i, col_i)
+      Cell.new(content, row_i, col_i)
     end
 
     def [](row_i, col_i)

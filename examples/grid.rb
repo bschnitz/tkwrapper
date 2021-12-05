@@ -5,52 +5,40 @@ require 'tkextlib/tile'
 
 require_relative '../lib/tkwrapper'
 
-class GridExample
-  include TkWrapper
+include TkWrapper
 
-  def initialize
-    root = TkRoot.new
-    content = Tk::Tile::Frame.new(root)
-
-    l1 = Tk::Tile::Label.new(content) { text '1'; background 'yellow'; justify 'center' }
-    l2 = Tk::Tile::Label.new(content) { text '2'; background 'green' }
-    l3 = Tk::Tile::Label.new(content) { text '3'; background 'yellow' }
-    l4 = Tk::Tile::Label.new(content) { text '4'; background 'green' }
-    l5 = Tk::Tile::Label.new(content) { text '5'; background 'yellow' }
-    l6 = Tk::Tile::Label.new(content) { text '6'; background 'green' }
-    l7 = Tk::Tile::Label.new(content) { text '7'; background 'yellow' }
-
-    grid = Grid.new(content)
-
-    grid.matrix = [
-      [l2,      :right, l3, l7],
-      [:bottom, nil,    l4, :bottom],
-      [l5,      l6,     l1, :right]
-    ]
-
-    # same as:
-    # grid
-    #   .add_row([l2, :right, l3, l7])
-    #   .add_row([:bottom, nil,    l4, :bottom])
-    #   .add_row([l5,      l6,     l1, :right], build: true)
-
-    grid.each do |cell|
-      cell.widget.grid sticky: 'nsew', padx: 5, pady: 5
-      cell.widget.configure(anchor: 'center')
-    end
-
-    grid.rows.each { |row| row.weight = 1 }
-    grid.cols.each { |col| col.weight = 1 }
-
-    # try:
-    # grid.cols[2].weight = 2
-    # and resize the window
-
-    TkGrid.columnconfigure( root, 0, :weight => 1 )
-    TkGrid.rowconfigure( root, 0, :weight => 1 )
-
-    Tk.mainloop
-  end
+TkWrapper::Widget.config(/label\.([a-z]*)/) do |label, match|
+  label.tkwidget.grid(padx: 10, pady: 10)
+  label.tkwidget['anchor'] = 'center'
+  label.tkwidget['background'] = match[1]
 end
 
-GridExample.new
+TkWrapper::Widget.config(:grid) do |grid|
+  grid.rows.each { |row| row.weight = 1 }
+  grid.cols.each { |col| col.weight = 1 }
+end
+
+label1 = Label.new(config: { text: '1', id: 'label.yellow' })
+label2 = Label.new(config: { text: '2', id: 'label.green' })
+label3 = Label.new(config: { text: '3', id: 'label.yellow' })
+label4 = Label.new(config: { text: '4', id: 'label.red' })
+label5 = Label.new(config: { text: '5', id: 'label.green' })
+label6 = Label.new(config: { text: '6', id: 'label.red' })
+label7 = Label.new(config: { text: '7', id: 'label.green' })
+
+Root.new(
+  config: { grid: true },
+  childs: Frame.new(
+    config: { grid: { column: 0, row: 0, sticky: 'nsew' } },
+    childs: Grid.new(
+      config: { id: :grid },
+      childs: [
+        [label1, :right, label2, label3],
+        [:bottom, nil,   label4, :bottom],
+        [label5, label6, label7, :right]
+      ]
+    )
+  )
+)
+
+Tk.mainloop

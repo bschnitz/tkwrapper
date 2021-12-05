@@ -11,8 +11,7 @@ module TkWrapper
     attr_accessor :rowspan, :colspan, :widget
     attr_reader :row_index, :col_index
 
-    def initialize(widget, grid, row_index, col_index)
-      @grid = grid
+    def initialize(widget, row_index, col_index)
       @widget = widget
       @row_index = row_index
       @col_index = col_index
@@ -20,13 +19,19 @@ module TkWrapper
       @colspan = 1
     end
 
-    def build
-      @widget.grid(
+    def build(parent)
+    #  cell.widget.grid sticky: 'nsew', padx: 5, pady: 5
+    #  cell.widget.configure(anchor: 'center')
+
+      @widget.config.merge!(grid: {
         row: @row_index,
         column: @col_index,
         rowspan: @rowspan,
-        columnspan: @colspan
-      )
+        columnspan: @colspan,
+        sticky: 'nsew'
+      })
+
+      @widget.build(parent)
     end
   end
 end
