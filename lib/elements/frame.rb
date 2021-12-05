@@ -7,20 +7,9 @@ module TkWrapper
   require 'tkextlib/tile'
   require_relative './widget'
 
-  class Frame
-    include Widget
-
-    def initialize(config: {}, childs: [])
-      @config = config
-      @childs = childs.is_a?(Array) ? childs : [childs]
-    end
-
-    def build(parent)
-      @tkwidget = Tk::Tile::Frame.new(parent)
-      configure(@tkwidget, @config)
-      @childs.each do |child|
-        child.build(@tkwidget)
-      end
+  class Frame < Widget
+    def widget(parent)
+      Tk::Tile::Frame.new(parent)
     end
   end
 end

@@ -4,26 +4,16 @@
 # functionality and to ease usage
 module TkWrapper
   require 'tk'
-  require 'tkextlib/tile'
   require_relative './widget'
 
-  class Root
-    include Widget
-
-    def initialize(config: {}, childs: [])
-      @config = config
-      @childs = childs.is_a?(Array) ? childs : [childs]
-      build
+  class Root < Widget
+    def initialize(**arguments)
+      super(**arguments)
+      build(nil)
     end
 
-    private
-
-    def build
-      @tkwidget = TkRoot.new
-      configure(@tkwidget, @config)
-      @childs.each do |child|
-        child.build(@tkwidget)
-      end
+    def widget(_parent)
+      TkRoot.new
     end
   end
 end
