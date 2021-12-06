@@ -29,7 +29,14 @@ module TkWrapper
     def configure(configuration)
       configure_grid(configuration[:grid])
       configure_global(configuration[:id])
+      configure_tearoff(configuration[:tearoff])
       configure_options(configuration, %i[style text anchor])
+    end
+
+    def configure_tearoff(configuration)
+      return if configuration.nil?
+
+      TkOption.add '*tearOff', (configuration ? 1 : 0)
     end
 
     def configure_options(configuration, options)
@@ -60,6 +67,8 @@ module TkWrapper
     end
 
     def self.configure_global(widget, id)
+      return unless @configurations
+
       @configurations.each do |(matcher, callback)|
         case matcher
         when Regexp
