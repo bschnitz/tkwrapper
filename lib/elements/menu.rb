@@ -8,22 +8,30 @@ module TkWrapper
   require_relative './widget'
 
   class Menu < Widget
-    def widget(parent)
-      parent['menu'] = TkMenu.new(parent)
+    def tk_class
+      TkMenu
+    end
+
+    def build(parent)
+      super(parent)
+      parent.tk_widget['menu'] = tk_widget
     end
 
     class Cascade < Widget
-      def widget(parent)
-        menu = TkMenu.new(parent)
-        config = @config.merge({ menu: menu })
-        parent.add :cascade, **config
-        menu
+      def tk_class
+        TkMenu
+      end
+
+      def build(parent)
+        super(parent, configure: false)
+        config = @config.merge({ menu: tk_widget })
+        parent.tk_widget.add :cascade, **config
       end
     end
 
     class Command < Widget
-      def widget(parent)
-        parent.add(:command, **@config) && nil
+      def build(parent)
+        parent.tk_widget.add :command, **@config
       end
     end
 

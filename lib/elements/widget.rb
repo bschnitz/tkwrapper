@@ -37,10 +37,10 @@ module TkWrapper
       merge_recursive!(@config, config)
     end
 
-    def build(parent)
+    def build(parent, configure: true)
       @parent = parent
       tk_widget # creates the widget if possible and not yet created
-      configure(@config)
+      self.configure(@config) if configure
       @childs.each { |child| child.build(self) }
     end
 
