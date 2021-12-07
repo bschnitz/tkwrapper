@@ -8,8 +8,8 @@ module TkWrapper
   require_relative './widget'
 
   class Frame < Widget
-    def widget(parent)
-      Tk::Tile::Frame.new(parent)
+    def tk_class
+      Tk::Tile::Frame
     end
   end
 end

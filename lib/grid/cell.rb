@@ -7,31 +7,27 @@ module TkWrapper
   require 'tkextlib/tile'
 
   # Cell in a Grid
-  class Cell
-    attr_accessor :rowspan, :colspan, :widget
+  class Cell < Widget
+    attr_accessor :rowspan, :colspan
     attr_reader :row_index, :col_index
 
-    def initialize(widget, row_index, col_index)
-      @widget = widget
-      @row_index = row_index
-      @col_index = col_index
-      @rowspan = 1
-      @colspan = 1
+    def initialize(config: {}, childs: [])
+      super(config: config, childs: childs)
+
+      @row_index = config[:row_index]
+      @col_index = config[:col_index]
+      @rowspan = config[:rowspan] || 1
+      @colspan = config[:colspan] || 1
     end
 
     def build(parent)
-    #  cell.widget.grid sticky: 'nsew', padx: 5, pady: 5
-    #  cell.widget.configure(anchor: 'center')
-
-      @widget.config.merge!(grid: {
-        row: @row_index,
-        column: @col_index,
+      merge_into_child_config(grid: {
         rowspan: @rowspan,
         columnspan: @colspan,
         sticky: 'nsew'
       })
 
-      @widget.build(parent)
+      super(parent)
     end
   end
 end

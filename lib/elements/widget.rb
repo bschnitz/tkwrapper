@@ -4,31 +4,47 @@
 # functionality and to ease usage
 module TkWrapper
   require 'tk'
-  require_relative '../util/virtual_methods'
+  require_relative '../util/merge_recursive'
 
   class Widget
-    extend VirtualMethods
+    attr_accessor :config
+    attr_reader :parent
 
-    attr_accessor :config, :tkwidget
-
-    virtual def widget(parent) end
+    def tk_class() end
 
     def initialize(config: {}, childs: [])
       @config = config
       @childs = childs.is_a?(Array) ? childs : [childs]
     end
 
+    def create_tk_widget(parent)
+      return unless tk_class
+
+      parent&.tk_widget ? tk_class.new(parent.tk_widget) : tk_class.new
+    end
+
+    # if parent is provided and self has no tk_class, the tk_widget of the
+    # parent is returned, if parent is not nil
+    def tk_widget(parent = @parent)
+      return @tk_widget if @tk_widget
+
+      (@tk_widget = create_tk_widget(parent)) || parent&.tk_widget
+    end
+
+    def add_config(**config)
+      merge_recursive!(@config, config)
+    end
+
     def build(parent)
-      @tkwidget = widget(parent)
+      @parent = parent
+      tk_widget # creates the widget if possible and not yet created
       configure(@config)
-      @childs.each do |child|
-        child.build(@tkwidget)
-      end
+      @childs.each { |child| child.build(self) }
     end
 
     def configure(configuration)
-      configure_grid(configuration[:grid])
       configure_global(configuration[:id])
+      configure_grid(configuration[:grid])
       configure_tearoff(configuration[:tearoff])
       configure_options(configuration, %i[style text anchor])
     end
@@ -48,23 +64,40 @@ module TkWrapper
     def configure_option(configuration, option)
       return if configuration[option].nil?
 
-      @tkwidget[option] = configuration[option]
+      tk_widget[option] = configuration[option]
     end
 
     def configure_grid(configuration)
       return unless configuration
 
       if configuration.is_a?(TrueClass)
-        TkGrid.columnconfigure(@tkwidget, 0, weight: 1)
-        TkGrid.rowconfigure(@tkwidget, 0, weight: 1)
+        TkGrid.columnconfigure(tk_widget, 0, weight: 1)
+        TkGrid.rowconfigure(tk_widget, 0, weight: 1)
       else
-        @tkwidget.grid(**configuration)
+        configure_weights(configuration.delete(:weights))
+        tk_widget.grid(**configuration)
+      end
+    end
+
+    def configure_weights(config)
+      config&.dig(:rows)&.each_with_index do |weight, index|
+        TkGrid.rowconfigure(tk_widget, index, weight: weight)
+      end
+
+      config&.dig(:cols)&.each_with_index do |weight, index|
+        TkGrid.columnconfigure(tk_widget, index, weight: weight)
       end
     end
 
     def configure_global(id)
+      # TODO: Widget.memorize(self, id)
       Widget.configure_global(self, id)
     end
+
+    # TODO: complete the following
+    # def self.memorize(widget, id)
+    #   ((@memorized_widgets ||= {})[id] ||= []).push(widget)
+    # end
 
     def self.configure_global(widget, id)
       return unless @configurations

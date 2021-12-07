@@ -12,8 +12,8 @@ module TkWrapper
       build(nil)
     end
 
-    def widget(_parent)
-      TkRoot.new
+    def tk_class
+      TkRoot
     end
   end
 end

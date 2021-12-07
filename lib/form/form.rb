@@ -8,9 +8,10 @@ require_relative '../grid/grid'
 module TkWrapper
   require 'tk'
   require 'tkextlib/tile'
+  require_relative '../elements/widget'
 
   # easyfied building of uniform Forms
-  class Form
+  class Form < Widget
     attr_accessor :parent
     attr_reader :grid
 
@@ -29,7 +30,7 @@ module TkWrapper
 
     def build(parent)
       @parent = parent
-      @grid = Grid.new(parent)
+      @grid = Grid.new
 
       create_elements_from_childs
 
@@ -37,10 +38,9 @@ module TkWrapper
         @grid.add_row(element.matrix)
       end
 
-      @grid.cols[1].weight = 1
-      @grid.each { |cell| cell.widget.grid sticky: 'nsw', padx: 2, pady: 2 }
+      @grid.build(self)
 
-      @grid.build
+      @grid.each { |cell| cell.widget.grid sticky: 'nsew', padx: 2, pady: 2 }
     end
 
     def create_elements_from_childs

@@ -13,7 +13,7 @@ module TkWrapper
     include GridVector
 
     def config(config)
-      TkGrid.columnconfigure(@grid.parent, @index, config)
+      TkGrid.columnconfigure(@grid.tkwidget, @index, config)
     end
   end
 end

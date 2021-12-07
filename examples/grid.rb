@@ -8,15 +8,19 @@ require_relative '../lib/tkwrapper'
 include TkWrapper
 
 TkWrapper::Widget.config(/label\.([a-z]*)/) do |label, match|
-  label.tkwidget.grid(padx: 10, pady: 10)
-  label.tkwidget['anchor'] = 'center'
-  label.tkwidget['background'] = match[1]
+  label.tk_widget.grid(padx: 10, pady: 10, sticky: 'nsew')
+  label.tk_widget['anchor'] = 'center'
+  label.tk_widget['background'] = match[1]
 end
 
 TkWrapper::Widget.config(:grid) do |grid|
-  grid.rows.each { |row| row.weight = 1 }
-  grid.cols.each { |col| col.weight = 1 }
+  grid.add_config(grid: { weights: {
+    rows: [1, 1, 1],
+    cols: [1, 1, 1, 1]
+  } })
 end
+
+Tk::Tile::Style.configure('TFrame', { background: 'purple' })
 
 label1 = Label.new(config: { text: '1', id: 'label.yellow' })
 label2 = Label.new(config: { text: '2', id: 'label.green' })
@@ -29,7 +33,7 @@ label7 = Label.new(config: { text: '7', id: 'label.green' })
 Root.new(
   config: { grid: true },
   childs: Frame.new(
-    config: { grid: { column: 0, row: 0, sticky: 'nsew' } },
+    config: { background: :green, grid: { column: 0, row: 0, sticky: 'nsew' } },
     childs: Grid.new(
       config: { id: :grid },
       childs: [

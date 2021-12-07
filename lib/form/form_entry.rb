@@ -18,8 +18,8 @@ module TkWrapper
     end
 
     def build(parent, value: '', label: nil)
-      (@label, labelframe) = create_label(parent, label)
-      @entry = Entry.new(parent, labelframe)
+      (@label, labelframe) = create_label(parent.tkwidget, label)
+      @entry = Entry.new(parent.tkwidget, labelframe)
       @entry.value = value unless value.empty?
       @entry.autoresize
     end
