@@ -7,41 +7,53 @@ require_relative '../lib/tkwrapper'
 
 include TkWrapper
 
+TkWrapper::Widget.config(:root) do |root|
+  root.tk_widget['geometry'] = '800x600'
+  # configure root window (as a grid with one row and column
+  root.grid[:weights] = { rows: [1], cols: [1] }
+end
+
+TkWrapper::Widget.config(:grid) do |grid|
+  # when resized, all columns shall resize equally
+  grid.grid[:weights] = {
+    rows: [1, 1, 1],
+    cols: [1, 1, 1, 1]
+  }
+
+  # the grid itself is in the grid of the root window,
+  # make it fill the whole space
+  grid.grid[:column] = 0
+  grid.grid[:row]    = 0
+  grid.grid[:sticky] = 'nsew'
+end
+
+# create labels with an id of 'label.color'
+# WARNING: random standard colors may produce eye cancer
+def randomcolor_label(text)
+  color = %w[green blue purple yellow red cyan magenta].sample
+  Label.new(config: { text: text, id: "label.#{color}" })
+end
+
+# configure labels using their id and the color in their id
 TkWrapper::Widget.config(/label\.([a-z]*)/) do |label, match|
   label.tk_widget.grid(padx: 10, pady: 10, sticky: 'nsew')
   label.tk_widget['anchor'] = 'center'
   label.tk_widget['background'] = match[1]
 end
 
-TkWrapper::Widget.config(:grid) do |grid|
-  grid.add_config(grid: { weights: {
-    rows: [1, 1, 1],
-    cols: [1, 1, 1, 1]
-  } })
-end
+# create the labels
+labels = (0..6).map { |number| randomcolor_label(number) }
 
-Tk::Tile::Style.configure('TFrame', { background: 'purple' })
-
-label1 = Label.new(config: { text: '1', id: 'label.yellow' })
-label2 = Label.new(config: { text: '2', id: 'label.green' })
-label3 = Label.new(config: { text: '3', id: 'label.yellow' })
-label4 = Label.new(config: { text: '4', id: 'label.red' })
-label5 = Label.new(config: { text: '5', id: 'label.green' })
-label6 = Label.new(config: { text: '6', id: 'label.red' })
-label7 = Label.new(config: { text: '7', id: 'label.green' })
-
+# put those labels into the grid; :right and :bottom span them over columns/rows
 Root.new(
-  config: { grid: true },
-  childs: Frame.new(
-    config: { background: :green, grid: { column: 0, row: 0, sticky: 'nsew' } },
-    childs: Grid.new(
-      config: { id: :grid },
-      childs: [
-        [label1, :right, label2, label3],
-        [:bottom, nil,   label4, :bottom],
-        [label5, label6, label7, :right]
-      ]
-    )
+  config: { id: :root },
+  childs: Grid.new(
+    config: { id: :grid, tk_class: Tk::Tile::TFrame },
+    childs: [
+      [labels[0], :right,    labels[1], labels[2]],
+      [:bottom,   nil,       labels[3], :bottom],
+      [labels[4], labels[5], labels[6], :right]
+    ]
   )
 )
 

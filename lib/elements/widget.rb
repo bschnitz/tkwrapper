@@ -18,6 +18,8 @@ module TkWrapper
     end
 
     def create_tk_widget(parent)
+      tk_class = self.tk_class || @config.delete(:tk_class)
+
       return unless tk_class
 
       parent&.tk_widget ? tk_class.new(parent.tk_widget) : tk_class.new
@@ -75,7 +77,7 @@ module TkWrapper
         TkGrid.rowconfigure(tk_widget, 0, weight: 1)
       else
         configure_weights(configuration.delete(:weights))
-        tk_widget.grid(**configuration)
+        tk_widget.grid(**configuration) unless configuration.empty?
       end
     end
 
@@ -114,6 +116,10 @@ module TkWrapper
 
     def self.config(matcher, &callback)
       (@configurations ||= []).push([matcher, callback])
+    end
+
+    def grid
+      @config[:grid] ||= {}
     end
   end
 end
