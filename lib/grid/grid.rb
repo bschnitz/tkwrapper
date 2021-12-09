@@ -11,10 +11,15 @@ module TkWrapper
   class Grid < Widget
     attr_reader :parent, :matrix
 
+    def tk_class
+      Tk::Tile::Frame
+    end
+
     def initialize(config: {}, childs: [])
       super(config: config, childs: childs)
+      @childs.map! { |row| row.is_a?(Array) ? row : [row] }
       configure_cells_for_grid
-      @childs.flatten!.select! { |cell| cell.is_a?(Widget) }
+      @childs.flatten! && @childs.select! { |cell| cell.is_a?(Widget) }
     end
 
     def configure_cells_for_grid

@@ -8,17 +8,18 @@ module TkWrapper
 
   class Widget
     attr_accessor :config
-    attr_reader :parent
+    attr_reader :parent, :childs
 
     def tk_class() end
 
     def initialize(config: {}, childs: [])
       @config = config
       @childs = childs.is_a?(Array) ? childs : [childs]
+      @id = config.dig(:id)
     end
 
     def create_tk_widget(parent)
-      tk_class = self.tk_class || @config.delete(:tk_class)
+      tk_class = @config.delete(:tk_class) || self.tk_class
 
       return unless tk_class
 
@@ -72,13 +73,16 @@ module TkWrapper
     def configure_grid(configuration)
       return unless configuration
 
-      if configuration.is_a?(TrueClass)
-        TkGrid.columnconfigure(tk_widget, 0, weight: 1)
-        TkGrid.rowconfigure(tk_widget, 0, weight: 1)
-      else
-        configure_weights(configuration.delete(:weights))
-        tk_widget.grid(**configuration) unless configuration.empty?
+      case configuration
+      when :onecell
+        configuration = { weights: {rows: [1], cols: [1]} }
+      when :fullcell
+        configuration = { column: 0, row: 0, sticky: 'nsew' }
       end
+
+      configure_weights(configuration.delete(:weights))
+
+      tk_widget.grid(**configuration) unless configuration.empty?
     end
 
     def configure_weights(config)
@@ -105,12 +109,11 @@ module TkWrapper
       return unless @configurations
 
       @configurations.each do |(matcher, callback)|
-        case matcher
-        when Regexp
-          (match = matcher.match(id)) && callback.call(widget, match)
-        when String, Symbol
-          matcher == id && callback.call(widget)
-        end
+        next unless (match = match_id(matcher, id, widget))
+
+        arguments = match.is_a?(MatchData) ? [widget, match] : [widget]
+        config = callback.call(*arguments)
+        config.is_a?(Hash) && merge_recursive!(widget.config, config)
       end
     end
 
@@ -120,6 +123,45 @@ module TkWrapper
 
     def grid
       @config[:grid] ||= {}
+    end
+
+    def self.match_id(matcher, id, widget)
+      case matcher
+      when Regexp
+        matcher.match(id)
+      when String, Symbol
+        matcher == id
+      else
+        widget.is_a?(matcher)
+      end
+    end
+
+    def match_id(matcher)
+      Widget.match_id(matcher, @id, self)
+    end
+
+    def find(matcher)
+      nodes_to_scan = [self]
+      until nodes_to_scan.empty?
+        node = nodes_to_scan.pop
+        return node if node.match_id(matcher)
+
+        nodes_to_scan = node.childs + nodes_to_scan
+      end
+    end
+
+    def find_all(matcher)
+      found_nodes = []
+      nodes_to_scan = [self]
+
+      until nodes_to_scan.empty?
+        node = nodes_to_scan.pop
+        found_nodes.push(node) if node.match_id(matcher)
+
+        nodes_to_scan = node.childs + nodes_to_scan
+      end
+
+      found_nodes
     end
   end
 end

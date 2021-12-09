@@ -7,13 +7,13 @@ require_relative '../lib/tkwrapper'
 
 include TkWrapper
 
-TkWrapper::Widget.config(:root) do |root|
+Widget.config(:root) do |root|
   root.tk_widget['geometry'] = '800x600'
   # configure root window (as a grid with one row and column
   root.grid[:weights] = { rows: [1], cols: [1] }
 end
 
-TkWrapper::Widget.config(:grid) do |grid|
+Widget.config(:grid) do |grid|
   # when resized, all columns shall resize equally
   grid.grid[:weights] = {
     rows: [1, 1, 1],
@@ -35,7 +35,7 @@ def randomcolor_label(text)
 end
 
 # configure labels using their id and the color in their id
-TkWrapper::Widget.config(/label\.([a-z]*)/) do |label, match|
+Widget.config(/label\.([a-z]*)/) do |label, match|
   label.tk_widget.grid(padx: 10, pady: 10, sticky: 'nsew')
   label.tk_widget['anchor'] = 'center'
   label.tk_widget['background'] = match[1]
@@ -45,7 +45,7 @@ end
 labels = (0..6).map { |number| randomcolor_label(number) }
 
 # put those labels into the grid; :right and :bottom span them over columns/rows
-Root.new(
+root = Root.new(
   config: { id: :root },
   childs: Grid.new(
     config: { id: :grid, tk_class: Tk::Tile::TFrame },
@@ -56,5 +56,9 @@ Root.new(
     ]
   )
 )
+
+puts root.find(:grid)
+puts root.find(Label)
+puts root.find_all(/label/).size
 
 Tk.mainloop

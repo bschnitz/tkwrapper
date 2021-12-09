@@ -5,9 +5,9 @@ module TkWrapper
   require 'tkextlib/tile'
   require_relative './widget'
 
-  class Entry < Widget
+  class Text < Widget
     def tk_class
-      Tk::Tile::Entry
+      TkText
     end
   end
 end

@@ -5,6 +5,20 @@ require 'tkextlib/tile'
 
 require_relative '../lib/tkwrapper'
 
+include TkWrapper
+
+def entry(label, id)
+  [Label.new(config: { text: label }), Entry.new(config: { id: id })]
+end
+
+Widget.config(:entries) do |grid|
+  grid.grid[:sticky] = 'nsw'
+  grid.grid[:weights] = {
+    rows: [1, 1],
+    cols: [0, 1]
+  }
+end
+
 #include TkWrapper
 
 #Tk::Tile::Style.configure('TEntry', { padding: 3 })
@@ -34,19 +48,23 @@ require_relative '../lib/tkwrapper'
 #
 #Tk.mainloop
 
-include TkWrapper
-
 Root.new(
-  config: { grid: true },
-  childs: Frame.new(
-    config: { grid: { padx: 10, pady: 10, sticky: 'nsew' } },
-    childs: Grid.new(
-      config: { id: :grid },
+  config: { grid: :onecell },
+  childs: [
+    Grid.new(
+      config: { grid: :fullcell },
       childs: [
-        [label, entry]
+        Grid.new(
+          config: { id: :entries },
+          childs: [
+            entry('Title:', :title),
+            entry('Year:', :year)
+          ]
+        ),
+        Text.new
       ]
     )
-  )
+  ]
 )
 
 Tk.mainloop
