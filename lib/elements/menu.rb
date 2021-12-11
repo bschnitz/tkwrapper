@@ -3,7 +3,7 @@
 # wraps some code of Tk to make it more object oriented, provide new
 # functionality and to ease usage
 module TkWrapper
-  require_relative './widget'
+  require_relative './widget/widget'
 
   class Menu < Widget
     def tk_class

@@ -4,8 +4,8 @@
 # functionality and to ease usage
 module TkWrapper
   require 'tk'
-  require_relative '../util/merge_recursive'
-  require_relative '../tk_extensions'
+  require_relative '../../util/merge_recursive'
+  require_relative '../../tk_extensions'
 
   class Widget
     include TkExtensions

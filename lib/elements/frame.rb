@@ -5,7 +5,7 @@
 module TkWrapper
   require 'tk'
   require 'tkextlib/tile'
-  require_relative './widget'
+  require_relative './widget/widget'
 
   class Frame < Widget
     def tk_class

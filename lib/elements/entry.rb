@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module TkWrapper
-  require_relative './widget'
+  require_relative './widget/widget'
 
   class Entry < Widget
     def tk_class

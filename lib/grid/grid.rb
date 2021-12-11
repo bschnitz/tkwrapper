@@ -3,7 +3,7 @@
 # wraps some code of Tk to make it more object oriented, provide new
 # functionality and to ease usage
 module TkWrapper
-  require_relative '../elements/widget'
+  require_relative '../elements/widget/widget'
 
   # classification of TkGrid
   class Grid < Widget
