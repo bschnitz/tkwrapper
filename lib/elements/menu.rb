@@ -3,13 +3,11 @@
 # wraps some code of Tk to make it more object oriented, provide new
 # functionality and to ease usage
 module TkWrapper
-  require 'tk'
-  require 'tkextlib/tile'
   require_relative './widget'
 
   class Menu < Widget
     def tk_class
-      TkMenu
+      TkWidgets::TkMenu
     end
 
     def build(parent)
@@ -19,7 +17,7 @@ module TkWrapper
 
     class Cascade < Widget
       def tk_class
-        TkMenu
+        TkWidgets::TkMenu
       end
 
       def build(parent)

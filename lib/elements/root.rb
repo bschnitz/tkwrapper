@@ -3,7 +3,6 @@
 # wraps some code of Tk to make it more object oriented, provide new
 # functionality and to ease usage
 module TkWrapper
-  require 'tk'
   require_relative './widget'
 
   class Root < Widget
@@ -13,7 +12,7 @@ module TkWrapper
     end
 
     def tk_class
-      TkRoot
+      TkWidgets::TkRoot
     end
   end
 end

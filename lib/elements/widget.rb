@@ -5,8 +5,11 @@
 module TkWrapper
   require 'tk'
   require_relative '../util/merge_recursive'
+  require_relative '../tk_extensions'
 
   class Widget
+    include TkExtensions
+
     attr_accessor :config
     attr_reader :parent, :childs
 
@@ -46,10 +49,17 @@ module TkWrapper
     end
 
     def configure(configuration)
-      configure_global(configuration[:id])
-      configure_grid(configuration[:grid])
-      configure_tearoff(configuration[:tearoff])
-      configure_options(configuration, %i[style text anchor])
+      configure_global(configuration.delete(:id))
+      configure_grid(configuration.delete(:grid))
+      configure_tearoff(configuration.delete(:tearoff))
+      #configure_options(configuration, %i[style text anchor padding])
+      configure_all_options(configuration)
+    end
+
+    def configure_all_options(options)
+      options.each do |option, value|
+        tk_widget[option] = value
+      end
     end
 
     def configure_tearoff(configuration)
@@ -78,6 +88,11 @@ module TkWrapper
         configuration = { weights: {rows: [1], cols: [1]} }
       when :fullcell
         configuration = { column: 0, row: 0, sticky: 'nsew' }
+      when :default
+        configuration = {
+          weights: { rows: [1], cols: [1] },
+          column: 0, row: 0, sticky: 'nsew'
+        }
       end
 
       configure_weights(configuration.delete(:weights))
@@ -163,5 +178,30 @@ module TkWrapper
 
       found_nodes
     end
+  end
+
+  # the first parent, which contains a tk_widget, which is really different from
+  # self.tk_widget
+  def get_container_parent
+    container = @parent
+    while container.tk_widget == tk_widget
+      return unless container.parent # not in a grid?
+
+      container = container.parent
+    end
+    container
+  end
+
+  # returns the bounding box of the tk_widget
+  def cell_bbox
+    return unless (container = get_container_parent)
+
+    grid_info = TkGrid.info(tk_widget)
+    start_col = grid_info['column']
+    end_col = start_col + grid_info['columnspan'] - 1
+    start_row = grid_info['row']
+    end_row = start_row + grid_info['rowspan'] - 1
+
+    TkGrid.bbox(container.tk_widget, start_col, start_row, end_col, end_row)
   end
 end

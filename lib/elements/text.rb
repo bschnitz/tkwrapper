@@ -7,7 +7,7 @@ module TkWrapper
 
   class Text < Widget
     def tk_class
-      TkText
+      TkWidgets::TkText
     end
   end
 end

@@ -9,7 +9,7 @@ module TkWrapper
 
   class Frame < Widget
     def tk_class
-      Tk::Tile::Frame
+      TkWidgets::Frame
     end
   end
 end

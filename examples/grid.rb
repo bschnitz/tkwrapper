@@ -10,21 +10,24 @@ include TkWrapper
 Widget.config(:root) do |root|
   root.tk_widget['geometry'] = '800x600'
   # configure root window (as a grid with one row and column
-  root.grid[:weights] = { rows: [1], cols: [1] }
+  { grid: { weights: { rows: [1], cols: [1] } } }
 end
 
 Widget.config(:grid) do |grid|
-  # when resized, all columns shall resize equally
-  grid.grid[:weights] = {
-    rows: [1, 1, 1],
-    cols: [1, 1, 1, 1]
+  {
+    grid: {
+      # the grid itself is in the grid of the root window,
+      # make it fill the whole space
+      column: 0,
+      row: 0,
+      sticky: 'nsew',
+      # when resized, all columns shall resize equally
+      weights: {
+        rows: [1, 1, 1],
+        cols: [1, 1, 1, 1]
+      }
+    }
   }
-
-  # the grid itself is in the grid of the root window,
-  # make it fill the whole space
-  grid.grid[:column] = 0
-  grid.grid[:row]    = 0
-  grid.grid[:sticky] = 'nsew'
 end
 
 # create labels with an id of 'label.color'
@@ -48,7 +51,7 @@ labels = (0..6).map { |number| randomcolor_label(number) }
 root = Root.new(
   config: { id: :root },
   childs: Grid.new(
-    config: { id: :grid, tk_class: Tk::Tile::TFrame },
+    config: { id: :grid, tk_class: TkExtensions::TkWidgets::Frame },
     childs: [
       [labels[0], :right,    labels[1], labels[2]],
       [:bottom,   nil,       labels[3], :bottom],

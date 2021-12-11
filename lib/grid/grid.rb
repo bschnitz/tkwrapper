@@ -3,8 +3,6 @@
 # wraps some code of Tk to make it more object oriented, provide new
 # functionality and to ease usage
 module TkWrapper
-  require 'tk'
-  require 'tkextlib/tile'
   require_relative '../elements/widget'
 
   # classification of TkGrid
@@ -12,7 +10,7 @@ module TkWrapper
     attr_reader :parent, :matrix
 
     def tk_class
-      Tk::Tile::Frame
+      TkWidgets::Frame
     end
 
     def initialize(config: {}, childs: [])
