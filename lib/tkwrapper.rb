@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
-require_relative 'elements/grid'
-require_relative 'elements/root'
-require_relative 'elements/frame'
-require_relative 'elements/label'
-require_relative 'elements/menu'
-require_relative 'elements/text'
-require_relative 'elements/entry'
-require_relative 'elements/auto_resize_entry'
+LIB_DIR = __dir__
+
+module TkWrapper end
+
+require_relative 'widgets/widgets'
+
+module TkWrapper
+  Widget = TkWrapper::Widgets::Base::Widget
+end

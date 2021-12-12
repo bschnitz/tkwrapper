@@ -8,6 +8,7 @@ require_relative '../lib/tkwrapper'
 Tk.appname('TkWrapperExampleForm')
 
 include TkWrapper
+include TkWrapper::Widgets
 
 def entry(label, id)
   [
@@ -16,19 +17,15 @@ def entry(label, id)
   ]
 end
 
-Widget.config(:outer_grid) do |_|
-  { grid: {
-    weights: { rows: [0, 1], cols: [1] },
-    column: 0, row: 0, sticky: 'nsew'
-  } }
-end
+Widget.config(:outer_grid, { grid: {
+  weights: { rows: [0, 1], cols: [1] },
+  column: 0, row: 0, sticky: 'nsew'
+} })
 
-Widget.config(:entries) do |grid|
-  { grid: {
-    sticky: 'nw',
-    weights: { cols: [0, 1] }
-  } }
-end
+Widget.config(:entries, { grid: {
+  sticky: 'nw',
+  weights: { cols: [0, 1] }
+} })
 
 Root.new(
   config: { grid: :onecell },
@@ -43,7 +40,7 @@ Root.new(
             entry('Year:', :year)
           ]
         ),
-        Text.new(config: { grid: {sticky: 'nw'} })
+        Text.new(config: { grid: { sticky: 'nw' } })
       ]
     )
   ]

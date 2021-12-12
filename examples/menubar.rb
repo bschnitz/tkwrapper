@@ -26,6 +26,7 @@ def classified
 
   require_relative '../lib/tkwrapper'
   include TkWrapper
+  include TkWrapper::Widgets
 
   Root.new(
     childs: Menu.new(
@@ -60,6 +61,7 @@ def concise
 
   require_relative '../lib/tkwrapper'
   include TkWrapper
+  include TkWrapper::Widgets
 
   Root.new(
     childs: Menu.create(

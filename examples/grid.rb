@@ -2,33 +2,30 @@
 
 require 'tk'
 require 'tkextlib/tile'
-
 require_relative '../lib/tkwrapper'
 
 include TkWrapper
+include TkWrapper::Widgets
 
-Widget.config(:root) do |root|
-  root.tk_widget['geometry'] = '800x600'
-  # configure root window (as a grid with one row and column
-  { grid: { weights: { rows: [1], cols: [1] } } }
-end
+Widget.config(:root, {
+  geometry: '800x600',
+  grid: { weights: { rows: [1], cols: [1] } }
+})
 
-Widget.config(:grid) do |grid|
-  {
-    grid: {
-      # the grid itself is in the grid of the root window,
-      # make it fill the whole space
-      column: 0,
-      row: 0,
-      sticky: 'nsew',
-      # when resized, all columns shall resize equally
-      weights: {
-        rows: [1, 1, 1],
-        cols: [1, 1, 1, 1]
-      }
+Widget.config(:grid, {
+  grid: {
+    # the grid itself is in the grid of the root window,
+    # make it fill the whole space
+    column: 0,
+    row: 0,
+    sticky: 'nsew',
+    # when resized, all columns shall resize equally
+    weights: {
+      rows: [1, 1, 1],
+      cols: [1, 1, 1, 1]
     }
   }
-end
+})
 
 # create labels with an id of 'label.color'
 # WARNING: random standard colors may produce eye cancer
@@ -37,10 +34,13 @@ def randomcolor_label(text)
   Label.new(config: { text: text, id: "label.#{color}" })
 end
 
+Widget.config(/label/, {
+  grid: { padx: 10, pady: 10, sticky: 'nsew' },
+  anchor: 'center'
+})
+
 # configure labels using their id and the color in their id
-Widget.config(/label\.([a-z]*)/) do |label, match|
-  label.tk_widget.grid(padx: 10, pady: 10, sticky: 'nsew')
-  label.tk_widget['anchor'] = 'center'
+Widget.modify(/label\.([a-z]*)/) do |label, match|
   label.tk_widget['background'] = match[1]
 end
 
