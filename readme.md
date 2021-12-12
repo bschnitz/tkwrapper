@@ -16,7 +16,7 @@ gem install tkwrapper
 
 #### Grid
 
-```
+```ruby
 require 'tk'
 require 'tkextlib/tile'
 require 'tkwrapper'
@@ -86,7 +86,7 @@ Tk.mainloop
 
 #### Form
 
-```
+```ruby
 require 'tk'
 require 'tkextlib/tile'
 
@@ -138,7 +138,7 @@ Tk.mainloop
 
 #### Menubar
 
-```
+```ruby
 require 'tk'
 
 require 'tkwrapper'
