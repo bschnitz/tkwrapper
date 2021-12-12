@@ -29,7 +29,7 @@ class TkWrapper::Widgets::Menu < TkWrapper::Widgets::Base::Widget
   end
 
   def self.create(structure: [], config: {})
-    Menu.new(
+    new(
       config: config,
       childs: structure.map { |entry| create_subentry(entry) }
     )
@@ -44,8 +44,8 @@ class TkWrapper::Widgets::Menu < TkWrapper::Widgets::Base::Widget
 
   def self.create_subentry(entry)
     case entry
-    in { config: config, structure: structure }
-      return Cascade.new config: config, childs: create_subentries(structure)
+    in { config: config, structure: st }
+      return Cascade.new config: config, childs: create_subentries(st)
     else
       return Command.new config: entry
     end

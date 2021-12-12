@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name                  = 'tkwrapper'
-  s.version               = '1.0.0'
+  s.version               = '1.0.1'
   s.required_ruby_version = '>= 3.0'
   s.summary               = 'Extensions/Wrapper ruby Tk'
   s.authors               = ['Benjamin Schnitzler']
