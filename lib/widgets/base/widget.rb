@@ -60,6 +60,11 @@ class TkWrapper::Widgets::Base::Widget
     @childs.each { |child| child.build(self) }
   end
 
+  def push(child)
+    @childs.push(child)
+    child.build(self)
+  end
+
   def configure
     @config.merge_global_configurations(manager, self)
     @config.configure_tk_widget(tk_widget)
