@@ -5,8 +5,8 @@ class TkWrapper::Widgets::AutoResizeEntry < TkWrapper::Widgets::Entry
   attr_accessor :min_width, :add_width
 
   def initialize(config: {}, childs: [])
-    @min_width = config.delete(:min_width) || 0
-    @add_width = config.delete(:add_width) || 0
+    @min_width = config[:min_width] || 0
+    @add_width = config[:add_width] || 0
     super(config: config, childs: childs)
   end
 
@@ -16,6 +16,14 @@ class TkWrapper::Widgets::AutoResizeEntry < TkWrapper::Widgets::Entry
     tk_widget.textvariable = TkVariable.new unless tk_widget.textvariable
     tk_widget.textvariable.trace('write') { resize }
     resize
+  end
+
+  def value=(value)
+    tk_widget.textvariable.value = value
+  end
+
+  def value
+    tk_widget.textvariable.value
   end
 
   def config_for_dummy_label
@@ -31,7 +39,7 @@ class TkWrapper::Widgets::AutoResizeEntry < TkWrapper::Widgets::Entry
   def create_dummy_label_with_same_size(&block)
     label = TkWrapper::Widgets::Label.new(**config_for_dummy_label)
     label.build(@parent)
-    label.tk_widget.text = tk_widget.textvariable.value
+    label.tk_widget.text = value
     label.tk_widget.lower
     result = block.call(label)
     label.tk_widget.destroy

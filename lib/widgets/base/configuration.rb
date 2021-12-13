@@ -20,7 +20,9 @@ class TkWrapper::Widgets::Base::Configuration
     }
   }.freeze
 
-  NON_TK_OPTIONS = %i[id tk_class tearoff weights menu].freeze
+  NON_TK_OPTIONS = %i[
+    id tk_class tearoff weights menu min_width add_width
+  ].freeze
 
   def initialize(config)
     @config = parse_and_clone(config)
