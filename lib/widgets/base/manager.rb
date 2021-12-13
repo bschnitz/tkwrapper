@@ -3,38 +3,60 @@
 # manages widgets and their global configurations
 class TkWrapper::Widgets::Base::Manager
   def initialize
-    @configurations = []
-    @modifications = []
+    @configuration_matchers = { regex: {}, map: {} }
+    @modification_matchers = { regex: {}, map: {} }
   end
 
-  def add_configurations(matcher = nil, configuration = nil, **configurations)
-    add_configuration(matcher, configuration)
+  def add_configurations(matcher = nil, config = nil, **configs)
+    add_matcher(matcher, config, @configuration_matchers) if config
 
-    configurations.each { |mat, cfg| add_configuration(mat, cfg) }
-  end
-
-  def add_configuration(matcher, configuration)
-    return unless configuration
-
-    @configurations.push([matcher, configuration])
+    configs.each { |mat, cfg| add_matcher(mat, cfg, @configuration_matchers) }
   end
 
   def add_modification(matcher, &callback)
-    @modifications.push([matcher, callback])
+    add_matcher(matcher, callback, @modification_matchers)
   end
 
   def configurations(widget)
-    @configurations.filter_map do |(matcher, config)|
-      config if widget.check_match(matcher)
-    end
+    configs = find_matching_items(widget.ids, @configuration_matchers)
+    configs.map { |config| config[0] }
   end
 
   def execute_modifications(widget)
-    @modifications.each do |(matcher, callback)|
-      next unless (match = widget.check_match(matcher))
+    callbacks = find_matching_items(widget.ids, @modification_matchers)
+    callbacks.each do |callback|
+      callback, match = callback
+      match ? callback.call(widget, match) : callback.call(widget)
+    end
+  end
 
-      arguments = match.is_a?(MatchData) ? [widget, match] : [widget]
-      callback.call(*arguments)
+  private
+
+  def find_matching_items(keys, container)
+    keys.each_with_object([]) do |key, items|
+      items.concat(
+        items_from_map(key, container),
+        items_by_regex(key, container)
+      )
+    end
+  end
+
+  def items_from_map(key, container)
+    (container[:map][key] || []).map { |item| [item, nil] } || []
+  end
+
+  def items_by_regex(key, container)
+    container[:regex].filter_map do |matcher, item|
+      match = matcher.match(key)
+      match ? [item, match] : nil
+    end
+  end
+
+  def add_matcher(matcher, item, container)
+    if matcher.is_a?(Regexp)
+      (container[:regex][matcher] ||= []).push(item)
+    else
+      (container[:map][matcher] ||= []).push(item)
     end
   end
 end

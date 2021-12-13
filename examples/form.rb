@@ -17,15 +17,21 @@ def entry(label, id)
   ]
 end
 
-Widget.config(:outer_grid, { grid: {
-  weights: { rows: [0, 1], cols: [1] },
-  column: 0, row: 0, sticky: 'nsew'
-} })
+Widget.config(
+  outer_grid: {
+    grid: {
+      weights: { rows: [0, 1], cols: [1] },
+      column: 0, row: 0, sticky: 'nsew'
+    }
+  },
 
-Widget.config(:entries, { grid: {
-  sticky: 'nw',
-  weights: { cols: [0, 1] }
-} })
+  entries: {
+    grid: {
+      sticky: 'nw',
+      weights: { cols: [0, 1] }
+    }
+  }
+)
 
 Root.new(
   config: { grid: :onecell },

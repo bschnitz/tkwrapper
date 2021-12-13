@@ -19,11 +19,19 @@ class TkWrapper::Widgets::Base::Widget
   end
 
   def self.config(matcher = nil, configuration = nil, **configurations)
-    manager.add_configuration(matcher, configuration, **configurations)
+    manager.add_configurations(matcher, configuration, **configurations)
   end
 
   def self.modify(matcher, &callback)
     manager.add_modification(matcher, &callback)
+  end
+
+  def ids
+    case @id
+    when Array then @id
+    when nil then   []
+    else            [@id]
+    end
   end
 
   def manager
