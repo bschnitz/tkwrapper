@@ -4,6 +4,8 @@
 class TkWrapper::Widgets::Grid < TkWrapper::Widgets::Base::Widget
   attr_reader :parent, :matrix
 
+  Widget = TkWrapper::Widgets::Base::Widget
+
   def tk_class
     TkWidgets::Frame
   end

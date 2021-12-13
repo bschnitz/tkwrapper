@@ -29,7 +29,7 @@ class TkWrapper::Widgets::AutoResizeEntry < TkWrapper::Widgets::Entry
   end
 
   def create_dummy_label_with_same_size(&block)
-    label = Label.new(**config_for_dummy_label)
+    label = TkWrapper::Widgets::Label.new(**config_for_dummy_label)
     label.build(@parent)
     label.tk_widget.text = tk_widget.textvariable.value
     label.tk_widget.lower
