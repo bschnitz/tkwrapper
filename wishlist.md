@@ -1,0 +1,4 @@
+- performance improvement for id handling
+- multiple 'ids' for a widget
+- xpath like id handling
+- add other widgets

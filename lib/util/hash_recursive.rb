@@ -19,12 +19,9 @@ module Util
     end
   end
 
-  def self.recursive_transform_key_value!(hash, &block)
-    hash.transform_keys! do |key|
-      value = hash[key]
-      next recursive_transform_key_value!(value, &block) if value.is_a?(Hash)
-
-      block.call(key, value)
+  def self.clone_recursive(hash)
+    hash.transform_values do |value|
+      value.is_a?(Hash) ? clone_recursive(value) : value
     end
   end
 end

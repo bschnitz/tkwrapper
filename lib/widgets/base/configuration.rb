@@ -5,7 +5,7 @@ require "#{LIB_DIR}/util/hash_recursive.rb"
 require_relative 'base'
 
 class TkWrapper::Widgets::Base::Configuration
-  attr_accessor :config
+  attr_reader :config
 
   GRID_SPECIAL_VALUES = {
     onecell: {
@@ -23,27 +23,17 @@ class TkWrapper::Widgets::Base::Configuration
   NON_TK_OPTIONS = %i[id tk_class tearoff weights menu].freeze
 
   def initialize(config)
-    @config = parse!(config)
+    @config = parse_and_clone(config)
   end
 
-  def merge!(*configurations)
+  def merge(*configurations)
     configurations = configurations.map do |configuration|
-      next configuration.config if configuration.is_a?(self.class)
+      configuration = configuration.config if configuration.is_a?(self.class)
 
-      parse!(configuration)
+      parse_and_clone(configuration)
     end
 
     Util.merge_recursive!(@config, *configurations)
-  end
-
-  def parse!(config)
-    Util.each_recursive(config) do |hash, key, value|
-      next if value.is_a?(Hash)
-
-      hash[key] = parse_value(key, value)
-    end
-
-    config
   end
 
   def [](key)
@@ -55,7 +45,13 @@ class TkWrapper::Widgets::Base::Configuration
 
   def []=(key, value)
     key = key.to_sym
-    @config[key] = parse_value(key, value)
+    @config[key] = parse_and_clone(value, key)
+  end
+
+  def parse_and_clone(value, key = nil)
+    return parse_value(key, value) unless value.is_a?(Hash)
+
+    value.each_with_object({}) { |(k, v), h| h[k] = parse_and_clone(v, k) }
   end
 
   def parse_value(key, value)
@@ -114,6 +110,6 @@ class TkWrapper::Widgets::Base::Configuration
   end
 
   def merge_global_configurations(manager, widget)
-    merge!(*manager.configurations(widget))
+    merge(*manager.configurations(widget))
   end
 end

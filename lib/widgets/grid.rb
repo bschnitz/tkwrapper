@@ -22,7 +22,7 @@ class TkWrapper::Widgets::Grid < TkWrapper::Widgets::Base::Widget
       row.each_with_index do |cell, col_i|
         next unless cell.is_a?(Widget)
 
-        (cell.config[:grid] ||= {}).merge!({ row: row_i, column: col_i })
+        cell.config.merge({ grid: { row: row_i, column: col_i } })
 
         configure_colspan(cell, row_i, col_i)
         configure_rowspan(cell, row_i, col_i)
@@ -35,7 +35,7 @@ class TkWrapper::Widgets::Grid < TkWrapper::Widgets::Base::Widget
     colspan = cols_after_cell.reduce(1) do |span, content|
       content == :right ? span + 1 : (break span)
     end
-    (cell.config[:grid] ||= {}).merge!({ columnspan: colspan })
+    cell.config.merge({ grid: { columnspan: colspan } })
   end
 
   def configure_rowspan(cell, row_i, col_i)
@@ -43,6 +43,6 @@ class TkWrapper::Widgets::Grid < TkWrapper::Widgets::Base::Widget
     rowspan = rows_after_cell.reduce(1) do |span, row|
       row[col_i] == :bottom ? span + 1 : (break span)
     end
-    (cell.config[:grid] ||= {}).merge!({ rowspan: rowspan })
+    cell.config.merge({ grid: { rowspan: rowspan } })
   end
 end
