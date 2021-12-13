@@ -46,9 +46,9 @@ class TkWrapper::Widgets::Base::Manager
   end
 
   def items_by_regex(key, container)
-    container[:regex].filter_map do |matcher, item|
+    container[:regex].each_with_object([]) do |(matcher, items), merged_items|
       match = matcher.match(key)
-      match ? [item, match] : nil
+      merged_items.concat(items.map { |item| [item, match] }) if match
     end
   end
 
