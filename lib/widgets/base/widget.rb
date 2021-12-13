@@ -18,8 +18,8 @@ class TkWrapper::Widgets::Base::Widget
     @manager ||= TkWrapper::Widgets::Base::Manager.new
   end
 
-  def self.config(matcher, configuration)
-    manager.add_configuration(matcher, configuration)
+  def self.config(matcher = nil, configuration = nil, **configurations)
+    manager.add_configuration(matcher, configuration, **configurations)
   end
 
   def self.modify(matcher, &callback)

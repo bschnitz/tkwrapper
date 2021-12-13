@@ -7,7 +7,15 @@ class TkWrapper::Widgets::Base::Manager
     @modifications = []
   end
 
+  def add_configurations(matcher = nil, configuration = nil, **configurations)
+    add_configuration(matcher, configuration)
+
+    configurations.each { |mat, cfg| add_configuration(mat, cfg) }
+  end
+
   def add_configuration(matcher, configuration)
+    return unless configuration
+
     @configurations.push([matcher, configuration])
   end
 
