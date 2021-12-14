@@ -60,8 +60,4 @@ root = Root.new(
   )
 )
 
-puts root.find(:grid)
-puts root.find(Label)
-puts root.find_all(/label/).size
-
 Tk.mainloop

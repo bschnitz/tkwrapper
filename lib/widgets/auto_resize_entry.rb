@@ -4,10 +4,10 @@ class TkWrapper::Widgets::AutoResizeEntry < TkWrapper::Widgets::Entry
   # auto resizes on user input, only works if in the grid geometry manager of tk
   attr_accessor :min_width, :add_width
 
-  def initialize(config: {}, childs: [])
+  def initialize(config: {}, childs: [], id: nil)
     @min_width = config[:min_width] || 0
     @add_width = config[:add_width] || 0
-    super(config: config, childs: childs)
+    super(config: config, childs: childs, id: id)
   end
 
   def build(parent, configure: true)

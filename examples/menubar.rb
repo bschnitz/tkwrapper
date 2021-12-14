@@ -14,9 +14,9 @@ def original
   file.label = 'File'
   menubar.add :cascade, :menu => file
   menubar.add :cascade, :menu => edit, :label => 'Edit'
-  file.add :command, :label => 'New', :command => proc{newFile}
-  file.add :command, :label => 'Open...', :command => proc{openFile}
-  file.add :command, :label => 'Close', :command => proc{closeFile}
+  file.add :command, :label => 'New', :command => -> { puts 'new File' }
+  file.add :command, :label => 'Open...', :command => -> { puts 'open File' }
+  file.add :command, :label => 'Close', :command => -> { puts 'close File' }
 
   Tk.mainloop
 end
@@ -69,9 +69,9 @@ def concise
       structure: [{
         config: { label: 'File' },
         structure: [
-          { label: 'New', command: proc { new_file } },
-          { label: 'Open...', command: proc { open_file } },
-          { label: 'Close', command: proc { close_file } }
+          { label: 'New', command: -> { puts 'new File' } },
+          { label: 'Open...', command: -> { puts 'open File' } },
+          { label: 'Close', command: -> { puts 'close File' } }
         ]
       }, {
         config: { label: 'Edit' },

@@ -10,8 +10,8 @@ class TkWrapper::Widgets::Grid < TkWrapper::Widgets::Base::Widget
     TkWidgets::Frame
   end
 
-  def initialize(config: {}, childs: [])
-    super(config: config, childs: childs)
+  def initialize(config: {}, childs: [], id: nil)
+    super(config: config, childs: childs, id: id)
     @childs.map! { |row| row.is_a?(Array) ? row : [row] }
     configure_cells_for_grid
     @childs.flatten! && @childs.select! { |cell| cell.is_a?(Widget) }

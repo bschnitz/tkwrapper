@@ -10,7 +10,7 @@ class TkWrapper::Widgets::Base::Widget
   include TkExtensions
 
   attr_accessor :config
-  attr_reader :parent, :childs
+  attr_reader :parent, :childs, :ids
 
   def tk_class() end
 
@@ -26,22 +26,23 @@ class TkWrapper::Widgets::Base::Widget
     manager.add_modification(matcher, &callback)
   end
 
-  def ids
-    case @id
-    when Array then @id
-    when nil then   []
-    else            [@id]
-    end
-  end
-
   def manager
     TkWrapper::Widgets::Base::Widget.manager
   end
 
-  def initialize(config: {}, childs: [])
+  def initialize(config: {}, childs: [], id: nil)
     @config = TkWrapper::Widgets::Base::Configuration.new(config)
     @childs = childs.is_a?(Array) ? childs : [childs]
-    @id = config[:id]
+    @ids = []
+    add_ids(id)
+    add_ids(config[:id])
+  end
+
+  def add_ids(ids)
+    return unless ids
+
+    ids = [ids] unless ids.is_a?(Array)
+    @ids.concat(ids)
   end
 
   def create_tk_widget(parent)
@@ -82,9 +83,9 @@ class TkWrapper::Widgets::Base::Widget
   def check_match(matcher)
     case matcher
     when Regexp
-      matcher.match(@id)
+      @ids.any? { |id| if (match = matcher.match(id)) then return match end }
     when String, Symbol
-      matcher == @id
+      @ids.any? { |id| id == matcher }
     when nil
       true
     else
@@ -102,14 +103,49 @@ class TkWrapper::Widgets::Base::Widget
     end
   end
 
-  def find_all(matcher)
+  def find_all(matchers)
+    matchers = [matchers] unless matchers.is_a?(Array)
+
+    matches = TkWrapper::Widgets::Base::Matches.new
+
+    nodes_to_scan = [self]
+    until nodes_to_scan.empty?
+      node = nodes_to_scan.shift
+      matches.add_with_multiple_matchers(node, matchers)
+      nodes_to_scan += node.childs
+    end
+
+    matches
+  end
+
+  def modify(matchers, &callback)
+    items = find_all(matchers)
+
+    callback.call(items)
+  end
+
+  def modify_each(matchers, &callback)
+    items = find_all(matchers)
+
+    return unless items
+
+    with_match = items[0].is_a?(Array)
+
+    items.each do |item|
+      with_match ? callback.call(item[0], item[1]) : callback.call(item)
+    end
+  end
+
+  private
+
+  def find_all_single(matcher)
     found_nodes = []
     nodes_to_scan = [self]
 
     until nodes_to_scan.empty?
       node = nodes_to_scan.pop
-      found_nodes.push(node) if node.check_match(matcher)
-
+      match = node.check_match(matcher)
+      found_nodes.push([node, match, matcher]) if match
       nodes_to_scan = node.childs + nodes_to_scan
     end
 
