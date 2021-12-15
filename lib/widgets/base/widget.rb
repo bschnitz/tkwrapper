@@ -3,6 +3,7 @@
 require 'tk'
 
 require "#{LIB_DIR}/tk_extensions"
+require "#{LIB_DIR}/util/tk/font"
 
 require_relative 'base'
 
@@ -64,6 +65,7 @@ class TkWrapper::Widgets::Base::Widget
   def build(parent, configure: true)
     @parent = parent
     tk_widget # creates the widget if possible and not yet created
+    @font = TkWrapper::Util::Tk::Font.new(tk_widget)
     self.configure if configure
     manager.execute_modifications(self)
     @childs.each { |child| child.build(self) }
