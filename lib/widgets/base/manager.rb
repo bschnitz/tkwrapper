@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# manages widgets and their global configurations
 class TkWrapper::Widgets::Base::Manager
   def initialize
     @configuration_matchers = { regex: {}, map: {} }

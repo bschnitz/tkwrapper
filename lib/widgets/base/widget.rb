@@ -4,14 +4,20 @@ require 'tk'
 
 require "#{LIB_DIR}/tk_extensions"
 require "#{LIB_DIR}/util/tk/font"
+require "#{LIB_DIR}/util/tk/cell"
+require "#{LIB_DIR}/util/tk/finder"
 
 require_relative 'base'
 
 class TkWrapper::Widgets::Base::Widget
+  extend Forwardable
   include TkExtensions
+  include Enumerable
+
+  def_delegators :@finder, :find, :find_all
 
   attr_accessor :config
-  attr_reader :parent, :childs, :ids
+  attr_reader :parent, :childs, :ids, :cell, :childs
 
   def tk_class() end
 
@@ -31,7 +37,18 @@ class TkWrapper::Widgets::Base::Widget
     TkWrapper::Widgets::Base::Widget.manager
   end
 
+  def each(&block)
+    nodes_to_walk = [self]
+    until nodes_to_walk.empty?
+      node = nodes_to_walk.pop
+      block.call(node)
+      nodes_to_walk = node.childs + nodes_to_walk
+    end
+  end
+
   def initialize(config: {}, childs: [], id: nil)
+    @cell = TkWrapper::Util::Tk::Cell.new(self)
+    @finder = TkWrapper::Util::Tk::Finder.new(self)
     @config = TkWrapper::Widgets::Base::Configuration.new(config)
     @childs = childs.is_a?(Array) ? childs : [childs]
     @ids = []
@@ -95,31 +112,6 @@ class TkWrapper::Widgets::Base::Widget
     end
   end
 
-  def find(matcher)
-    nodes_to_scan = [self]
-    until nodes_to_scan.empty?
-      node = nodes_to_scan.pop
-      return node if node.check_match(matcher)
-
-      nodes_to_scan = node.childs + nodes_to_scan
-    end
-  end
-
-  def find_all(matchers)
-    matchers = [matchers] unless matchers.is_a?(Array)
-
-    matches = TkWrapper::Widgets::Base::Matches.new
-
-    nodes_to_scan = [self]
-    until nodes_to_scan.empty?
-      node = nodes_to_scan.shift
-      matches.add_with_multiple_matchers(node, matchers)
-      nodes_to_scan += node.childs
-    end
-
-    matches
-  end
-
   def modify(matchers, &callback)
     items = find_all(matchers)
 
@@ -137,45 +129,4 @@ class TkWrapper::Widgets::Base::Widget
       with_match ? callback.call(item[0], item[1]) : callback.call(item)
     end
   end
-
-  private
-
-  def find_all_single(matcher)
-    found_nodes = []
-    nodes_to_scan = [self]
-
-    until nodes_to_scan.empty?
-      node = nodes_to_scan.pop
-      match = node.check_match(matcher)
-      found_nodes.push([node, match, matcher]) if match
-      nodes_to_scan = node.childs + nodes_to_scan
-    end
-
-    found_nodes
-  end
-end
-
-# the first parent, which contains a tk_widget, which is really different
-# from self.tk_widget
-def get_container_parent
-  container = @parent
-  while container.tk_widget == tk_widget
-    return unless container.parent # not in a grid?
-
-    container = container.parent
-  end
-  container
-end
-
-# returns the bounding box of the tk_widget
-def cell_bbox
-  return unless (container = get_container_parent)
-
-  grid_info = TkGrid.info(tk_widget)
-  start_col = grid_info['column']
-  end_col = start_col + grid_info['columnspan'] - 1
-  start_row = grid_info['row']
-  end_row = start_row + grid_info['rowspan'] - 1
-
-  TkGrid.bbox(container.tk_widget, start_col, start_row, end_col, end_row)
 end

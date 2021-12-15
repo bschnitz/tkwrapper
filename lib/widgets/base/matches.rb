@@ -8,19 +8,9 @@ class TkWrapper::Widgets::Base::Matches
     @matches = {}
   end
 
-  def add_with_multiple_matchers(widget, matchers)
-    matchers.each do |matcher|
-      add(widget, matcher)
-    end
-  end
-
-  def add(widget, matcher)
-    case matcher
-    when Regexp         then add_by_regex_on_id(widget, matcher)
-    when String, Symbol then add_by_equality_on_id(widget, matcher)
-    when nil            then add_for_key(nil, widget, nil)
-    when Class          then add_by_equality_on_class(widget, matcher)
-    else                     false
+  def add(matches)
+    (matches.is_a?(Array) ? matches : [matches]).each do |match|
+      (@matches[match.key] ||= []).push(match) if match
     end
   end
 
@@ -38,35 +28,5 @@ class TkWrapper::Widgets::Base::Matches
     when 1 then @matches[key][0]
     else        @matches[key]
     end
-  end
-
-  private
-
-  def add_by_equality_on_class(widget, matcher)
-    return false unless widget.is_a?(matcher)
-
-    add_for_key(matcher.name, widget, matcher.name)
-  end
-
-  def add_by_regex_on_id(widget, matcher)
-    widget.ids.reduce(false) do |matches, id|
-      if (match = matcher.match(id))
-        add_for_key(match[0], widget, match)
-      else
-        matches || false
-      end
-    end
-  end
-
-  def add_by_equality_on_id(widget, key)
-    widget.ids.each do |id|
-      return add_for_key(key, widget, key) if id == key
-    end
-    false
-  end
-
-  def add_for_key(key, widget, match)
-    match = TkWrapper::Widgets::Base::Match.new(key, widget, match)
-    (@matches[key] ||= []).push(match) || true
   end
 end

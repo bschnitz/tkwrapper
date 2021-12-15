@@ -27,7 +27,7 @@ class TkWrapper::Widgets::AutoResizeEntry < TkWrapper::Widgets::Entry
   end
 
   def resize
-    max_width = cell_bbox[2]
+    max_width = @cell.bbox[2]
     text_width = @font.measure(value)
     new_width = [[@min_width, text_width + @add_width].max, max_width].min
     tk_widget.width = 0
