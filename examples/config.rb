@@ -5,7 +5,9 @@ require_relative '../lib/tkwrapper'
 include TkWrapper
 include TkWrapper::Widgets
 
-Widget.config(
+manager = Manager.new
+
+manager.config(
   root: {
     weights: { rows: [0, 0, 0], cols: [1, 1] }
   },
@@ -36,14 +38,15 @@ Widget.config(
 )
 
 root = Root.new(
-  config: { id: :root },
+  manager: manager,
+  ids: :root,
   childs: [
-    Label.new(id: :hello),
-    Label.new(id: :worlds),
-    Label.new(id: %i[label_yellow left]),
-    Label.new(id: %i[label_magenta right]),
-    Label.new(id: :one),
-    Label.new(id: :two)
+    Label.new(ids: :hello),
+    Label.new(ids: :worlds),
+    Label.new(ids: %i[label_yellow left]),
+    Label.new(ids: %i[label_magenta right]),
+    Label.new(ids: :one),
+    Label.new(ids: :two)
   ]
 )
 

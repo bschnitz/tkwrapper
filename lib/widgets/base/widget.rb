@@ -1,11 +1,6 @@
-# frozen_string_literal: true
-
-require 'tk'
-
-require "#{LIB_DIR}/tk_extensions"
-require "#{LIB_DIR}/util/tk/font"
 require "#{LIB_DIR}/util/tk/cell"
 require "#{LIB_DIR}/util/tk/finder"
+require "#{LIB_DIR}/tk_extensions"
 
 require_relative 'base'
 
@@ -14,54 +9,20 @@ class TkWrapper::Widgets::Base::Widget
   include TkExtensions
   include Enumerable
 
-  def_delegator :@finder, :find_widget, :find
-  def_delegator :@finder, :find_all_widgets, :find_all
+  def_delegators :@finder, :find, :find_all
 
   attr_accessor :config
-  attr_reader :parent, :ids, :cell, :childs
+  attr_reader :parent, :ids, :cell, :childs, :manager
 
   def tk_class() end
 
-  def self.manager
-    @manager ||= TkWrapper::Widgets::Base::Manager.new
-  end
-
-  def self.config(matcher = nil, configuration = nil, **configurations)
-    manager.add_configurations(matcher, configuration, **configurations)
-  end
-
-  def self.modify(matcher, &callback)
-    manager.add_modification(matcher, &callback)
-  end
-
-  def manager
-    TkWrapper::Widgets::Base::Widget.manager
-  end
-
-  def each(&block)
-    nodes_to_walk = [self]
-    until nodes_to_walk.empty?
-      node = nodes_to_walk.pop
-      block.call(node)
-      nodes_to_walk = node.childs + nodes_to_walk
-    end
-  end
-
-  def initialize(config: {}, childs: [], id: nil)
+  def initialize(config: {}, childs: [], manager: nil, ids: [])
     @cell = TkWrapper::Util::Tk::Cell.new(self)
     @finder = TkWrapper::Util::Tk::Finder.new(widgets: self)
     @config = TkWrapper::Widgets::Base::Configuration.new(config)
     @childs = childs.is_a?(Array) ? childs : [childs]
-    @ids = []
-    add_ids(id)
-    add_ids(config[:id])
-  end
-
-  def add_ids(ids)
-    return unless ids
-
-    ids = [ids] unless ids.is_a?(Array)
-    @ids.concat(ids)
+    @manager = manager
+    @ids = ids.is_a?(Array) ? ids : [ids]
   end
 
   def create_tk_widget(parent)
@@ -80,41 +41,33 @@ class TkWrapper::Widgets::Base::Widget
     (@tk_widget = create_tk_widget(parent)) || parent&.tk_widget
   end
 
-  def build(parent, configure: true)
+  def build(parent, configure: true, manager: nil)
     @parent = parent
     tk_widget # creates the widget if possible and not yet created
     @font = TkWrapper::Util::Tk::Font.new(tk_widget)
+    @manager ||= manager
+    @config.merge(*@manager.configurations(self)) if @manager
     self.configure if configure
-    manager.execute_modifications(self)
-    @childs.each { |child| child.build(self) }
+    @manager&.execute_modifications(self)
+    @childs.each { |child| child.build(self, manager: @manager) }
+  end
+
+  def configure
+    @config.configure_tk_widget(tk_widget)
+    @config.configure_tearoff
+  end
+
+  def each(&block)
+    nodes_to_walk = [self]
+    until nodes_to_walk.empty?
+      node = nodes_to_walk.pop
+      block.call(node)
+      nodes_to_walk = node.childs + nodes_to_walk
+    end
   end
 
   def push(child)
     @childs.push(child)
     child.build(self)
-  end
-
-  def configure
-    @config.merge_global_configurations(manager, self)
-    @config.configure_tk_widget(tk_widget)
-    @config.configure_tearoff
-  end
-
-  def modify(matchers, &callback)
-    items = find_all(matchers)
-
-    callback.call(items)
-  end
-
-  def modify_each(matchers, &callback)
-    items = find_all(matchers)
-
-    return unless items
-
-    with_match = items[0].is_a?(Array)
-
-    items.each do |item|
-      with_match ? callback.call(item[0], item[1]) : callback.call(item)
-    end
   end
 end

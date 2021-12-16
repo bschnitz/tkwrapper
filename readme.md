@@ -21,15 +21,14 @@ require 'tk'
 require 'tkextlib/tile'
 require 'tkwrapper'
 
-include TkWrapper
-include TkWrapper::Widgets
+manager = Manager.new
 
-Widget.config(:root, {
+manager.config(:root, {
   geometry: '800x600',
   grid: { weights: { rows: [1], cols: [1] } }
 })
 
-Widget.config(:grid, {
+manager.config(:grid, {
   grid: {
     # the grid itself is in the grid of the root window,
     # make it fill the whole space
@@ -48,16 +47,16 @@ Widget.config(:grid, {
 # WARNING: random standard colors may produce eye cancer
 def randomcolor_label(text)
   color = %w[green blue purple yellow red cyan magenta].sample
-  Label.new(config: { text: text, id: "label.#{color}" })
+  Label.new(config: { text: text }, ids: "label.#{color}")
 end
 
-Widget.config(/label/, {
+manager.config(/label/, {
   grid: { padx: 10, pady: 10, sticky: 'nsew' },
   anchor: 'center'
 })
 
 # configure labels using their id and the color in their id
-Widget.modify(/label\.([a-z]*)/) do |label, m|
+manager.modify(/label\.([a-z]*)/) do |label, m|
   label.tk_widget['background'] = m.match[1]
 end
 
@@ -66,9 +65,10 @@ labels = (0..6).map { |number| randomcolor_label(number) }
 
 # put those labels into the grid; :right and :bottom span them over columns/rows
 root = Root.new(
-  config: { id: :root },
+  manager: manager,
+  ids: :root,
   childs: Grid.new(
-    config: { id: :grid, tk_class: TkExtensions::TkWidgets::Frame },
+    ids: :grid,
     childs: [
       [labels[0], :right,    labels[1], labels[2]],
       [:bottom,   nil,       labels[3], :bottom],
@@ -76,10 +76,6 @@ root = Root.new(
     ]
   )
 )
-
-puts root.find(:grid)
-puts root.find(Label)
-puts root.find_all(/label/).size
 
 Tk.mainloop
 ```
@@ -92,36 +88,40 @@ require 'tkextlib/tile'
 
 require 'tkwrapper'
 
-Tk.appname('TkWrapperExampleForm')
-
-include TkWrapper
-include TkWrapper::Widgets
+manager = Manager.new
 
 def entry(label, id)
   [
     Label.new(config: { text: label, grid: { padx: 5, pady: 5 } }),
-    AutoResizeEntry.new(config: { id: id, grid: { sticky: 'nw', pady: 5 } })
+    AutoResizeEntry.new(ids: id, config: {grid: { sticky: 'nw', pady: 5 } })
   ]
 end
 
-Widget.config(:outer_grid, { grid: {
-  weights: { rows: [0, 1], cols: [1] },
-  column: 0, row: 0, sticky: 'nsew'
-} })
+manager.config(
+  outer_grid: {
+    grid: {
+      weights: { rows: [0, 1], cols: [1] },
+      column: 0, row: 0, sticky: 'nsew'
+    }
+  },
 
-Widget.config(:entries, { grid: {
-  sticky: 'nw',
-  weights: { cols: [0, 1] }
-} })
+  entries: {
+    grid: {
+      sticky: 'nw',
+      weights: { cols: [0, 1] }
+    }
+  }
+)
 
 Root.new(
+  manager: manager,
   config: { grid: :onecell },
   childs: [
     Grid.new(
-      config: { id: :outer_grid },
+      ids: :outer_grid,
       childs: [
         Grid.new(
-          config: { id: :entries },
+          ids: :entries,
           childs: [
             entry('Title:', :title),
             entry('Year:', :year)
@@ -142,6 +142,7 @@ Tk.mainloop
 require 'tk'
 
 require 'tkwrapper'
+
 include TkWrapper
 include TkWrapper::Widgets
 
@@ -151,9 +152,9 @@ Root.new(
     structure: [{
       config: { label: 'File' },
       structure: [
-        { label: 'New', command: proc { new_file } },
-        { label: 'Open...', command: proc { open_file } },
-        { label: 'Close', command: proc { close_file } }
+        { label: 'New', command: -> { puts 'new File' } },
+        { label: 'Open...', command: -> { puts 'open File' } },
+        { label: 'Close', command: -> { puts 'close File' } }
       ]
     }, {
       config: { label: 'Edit' },

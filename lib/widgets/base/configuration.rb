@@ -21,7 +21,7 @@ class TkWrapper::Widgets::Base::Configuration
   }.freeze
 
   NON_TK_OPTIONS = %i[
-    id tk_class tearoff weights menu min_width add_width
+    tk_class tearoff weights menu min_width add_width
   ].freeze
 
   def initialize(config)
@@ -112,6 +112,8 @@ class TkWrapper::Widgets::Base::Configuration
   end
 
   def merge_global_configurations(manager, widget)
+    return unless manager
+
     merge(*manager.configurations(widget))
   end
 end

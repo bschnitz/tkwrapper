@@ -13,7 +13,9 @@ include TkWrapper::Widgets
 Tk::Tile::Style.configure('Visible.TFrame', { background: '#e784e7' })
 Tk::Tile::Style.configure('Border.TFrame', { borderwidth: 2 })
 
-Widget.config(:container, { grid: {
+manager = Manager.new
+
+manager.config(:container, { grid: {
   column: 0,
   row: 0,
   padx: 5,
@@ -23,9 +25,10 @@ Widget.config(:container, { grid: {
 } })
 
 Root.new(
+  manager: manager,
   config: { grid: :onecell },
   childs: Frame.new(
-    config: { id: :container },
+    ids: :container,
     childs: AutoResizeEntry.new(
       config: { grid: { column: 0, row: 0, sticky: 'nw' } }
     )

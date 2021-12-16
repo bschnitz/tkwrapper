@@ -5,8 +5,8 @@ class TkWrapper::Widgets::Menu < TkWrapper::Widgets::Base::Widget
     TkWidgets::TkMenu
   end
 
-  def build(parent)
-    super(parent)
+  def build(parent, **args)
+    super(parent, **args)
     parent.tk_widget['menu'] = tk_widget
   end
 
@@ -15,15 +15,18 @@ class TkWrapper::Widgets::Menu < TkWrapper::Widgets::Base::Widget
       TkWidgets::TkMenu
     end
 
-    def build(parent)
-      super(parent, configure: false)
+    def build(parent, **args)
+      args[:configure] = false
+      super(parent, **args)
       @config[:menu] = tk_widget
       parent.tk_widget.add :cascade, **@config.config
     end
   end
 
   class Command < TkWrapper::Widgets::Base::Widget
-    def build(parent)
+    def build(parent, **args)
+      args[:configure] = false
+      super(parent, **args)
       parent.tk_widget.add :command, **@config.config
     end
   end

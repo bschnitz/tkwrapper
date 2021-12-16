@@ -7,12 +7,14 @@ require_relative '../lib/tkwrapper'
 include TkWrapper
 include TkWrapper::Widgets
 
-Widget.config(:root, {
+manager = Manager.new
+
+manager.config(:root, {
   geometry: '800x600',
   grid: { weights: { rows: [1], cols: [1] } }
 })
 
-Widget.config(:grid, {
+manager.config(:grid, {
   grid: {
     # the grid itself is in the grid of the root window,
     # make it fill the whole space
@@ -31,16 +33,16 @@ Widget.config(:grid, {
 # WARNING: random standard colors may produce eye cancer
 def randomcolor_label(text)
   color = %w[green blue purple yellow red cyan magenta].sample
-  Label.new(config: { text: text, id: "label.#{color}" })
+  Label.new(config: { text: text }, ids: "label.#{color}")
 end
 
-Widget.config(/label/, {
+manager.config(/label/, {
   grid: { padx: 10, pady: 10, sticky: 'nsew' },
   anchor: 'center'
 })
 
 # configure labels using their id and the color in their id
-Widget.modify(/label\.([a-z]*)/) do |label, m|
+manager.modify(/label\.([a-z]*)/) do |label, m|
   label.tk_widget['background'] = m.match[1]
 end
 
@@ -49,9 +51,10 @@ labels = (0..6).map { |number| randomcolor_label(number) }
 
 # put those labels into the grid; :right and :bottom span them over columns/rows
 root = Root.new(
-  config: { id: :root },
+  manager: manager,
+  ids: :root,
   childs: Grid.new(
-    config: { id: :grid, tk_class: TkExtensions::TkWidgets::Frame },
+    ids: :grid,
     childs: [
       [labels[0], :right,    labels[1], labels[2]],
       [:bottom,   nil,       labels[3], :bottom],

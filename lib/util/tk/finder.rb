@@ -21,7 +21,7 @@ class TkWrapper::Util::Tk::Finder
     end
   end
 
-  def find_widget(comparators, widgets = @widgets)
+  def find(comparators, widgets = @widgets)
     matchers = create_value_matchers(comparators)
 
     each_widget_match(widgets, matchers) do |match|
@@ -29,7 +29,7 @@ class TkWrapper::Util::Tk::Finder
     end
   end
 
-  def find_all_widgets(comparators, widgets = @widgets)
+  def find_all(comparators, widgets = @widgets)
     matchers = create_value_matchers(comparators)
     matches = TkWrapper::Widgets::Base::Matches.new
 
