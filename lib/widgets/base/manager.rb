@@ -1,61 +1,40 @@
 # frozen_string_literal: true
 
+require_relative 'comparator_item_store'
+
 class TkWrapper::Widgets::Base::Manager
+  ComparatorItemStore = TkWrapper::Widgets::Base::ComparatorItemStore
+
   def initialize
-    @configuration_matchers = { regex: {}, map: {} }
-    @modification_matchers = { regex: {}, map: {} }
+    @configurations = ComparatorItemStore.new
+    @modifications = ComparatorItemStore.new
   end
 
-  def add_configurations(matcher = nil, config = nil, **configs)
-    add_matcher(matcher, config, @configuration_matchers) if config
+  def add_configurations(matcher = nil, configuration = nil, **configurations)
+    add_configuration(matcher, configuration) if configuration
 
-    configs.each { |mat, cfg| add_matcher(mat, cfg, @configuration_matchers) }
+    configurations.each { |mat, cfg| add_configuration(mat, cfg) }
+  end
+
+  def add_configuration(comparator, configuration)
+    @configurations.push(comparator, configuration)
   end
 
   def add_modification(matcher, &callback)
-    add_matcher(matcher, callback, @modification_matchers)
+    @modifications.push(matcher, callback)
   end
 
   def configurations(widget)
-    configs = find_matching_items(widget.ids, @configuration_matchers)
-    configs.map { |config| config[0] }
+    config_list = @configurations.items_and_matches_for_widget(widget)
+    config_list.map { |configs| configs[:items] }.flatten(1)
   end
 
   def execute_modifications(widget)
-    callbacks = find_matching_items(widget.ids, @modification_matchers)
-    callbacks.each do |callback|
-      callback, match = callback
-      match ? callback.call(widget, match) : callback.call(widget)
-    end
-  end
-
-  private
-
-  def find_matching_items(keys, container)
-    keys.each_with_object([]) do |key, items|
-      items.concat(
-        items_from_map(key, container),
-        items_by_regex(key, container)
-      )
-    end
-  end
-
-  def items_from_map(key, container)
-    (container[:map][key] || []).map { |item| [item, nil] } || []
-  end
-
-  def items_by_regex(key, container)
-    container[:regex].each_with_object([]) do |(matcher, items), merged_items|
-      match = matcher.match(key)
-      merged_items.concat(items.map { |item| [item, match] }) if match
-    end
-  end
-
-  def add_matcher(matcher, item, container)
-    if matcher.is_a?(Regexp)
-      (container[:regex][matcher] ||= []).push(item)
-    else
-      (container[:map][matcher] ||= []).push(item)
+    item_list = @modifications.items_and_matches_for_widget(widget)
+    item_list.each do |items|
+      items[:items].each do |callback|
+        callback.call(widget, items[:match])
+      end
     end
   end
 end

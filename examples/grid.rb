@@ -40,8 +40,8 @@ Widget.config(/label/, {
 })
 
 # configure labels using their id and the color in their id
-Widget.modify(/label\.([a-z]*)/) do |label, match|
-  label.tk_widget['background'] = match[1]
+Widget.modify(/label\.([a-z]*)/) do |label, m|
+  label.tk_widget['background'] = m.match[1]
 end
 
 # create the labels

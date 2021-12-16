@@ -5,32 +5,45 @@ require "#{LIB_DIR}/widgets/base/matcher"
 require_relative 'tk'
 
 class TkWrapper::Util::Tk::Finder
-  def initialize(widget)
-    @widget = widget
+  Matcher = TkWrapper::Widgets::Base::Matcher
+
+  def initialize(widgets: nil)
+    @widgets = widgets
   end
 
-  def wrap_matcher(matcher)
-    TkWrapper::Widgets::Base::Matcher.new(matcher: matcher)
+  def each_widget_match(widgets, matchers, &block)
+    widgets.each do |widget|
+      widget.ids.each do |id|
+        matchers.each do |matcher|
+          (match = matcher.match(id, widget)) && block.call(match)
+        end
+      end
+    end
   end
 
-  def find(matcher)
-    matcher = wrap_matcher(matcher)
+  def find_widget(comparators, widgets = @widgets)
+    matchers = create_value_matchers(comparators)
 
-    @widget.each { |widget| return widget if matcher.match(widget) }
+    each_widget_match(widgets, matchers) do |match|
+      return match.widget if match
+    end
   end
 
-  def find_all(matchers)
-    matchers = [matchers] unless matchers.is_a?(Array)
-    matchers = matchers.map(&method(:wrap_matcher))
-
+  def find_all_widgets(comparators, widgets = @widgets)
+    matchers = create_value_matchers(comparators)
     matches = TkWrapper::Widgets::Base::Matches.new
 
-    @widget.each do |widget|
-      matchers.each do |matcher|
-        matches.add(matcher.match(widget))
-      end
+    each_widget_match(widgets, matchers) do |match|
+      matches.push(match)
     end
 
     matches
+  end
+
+  private
+
+  def create_value_matchers(comparators)
+    comparators = [comparators] unless comparators.is_a?(Array)
+    comparators.map { |comparator| Matcher.new(comparator: comparator) }
   end
 end

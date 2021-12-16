@@ -8,16 +8,18 @@ class TkWrapper::Widgets::Base::Matches
     @matches = {}
   end
 
-  def add(matches)
-    (matches.is_a?(Array) ? matches : [matches]).each do |match|
-      (@matches[match.key] ||= []).push(match) if match
-    end
+  def push(match)
+    (@matches[match.key] ||= []).push(match)
+  end
+
+  def concat(matches)
+    matches.each { |match| push(match) }
   end
 
   def each(&block)
     @matches.each do |(key, matches_for_key)|
       matches_for_key.each do |match|
-        block.call([match.widget, key, match.match])
+        block.call([match.widget, key, match.match, match])
       end
     end
   end

@@ -14,10 +14,11 @@ class TkWrapper::Widgets::Base::Widget
   include TkExtensions
   include Enumerable
 
-  def_delegators :@finder, :find, :find_all
+  def_delegator :@finder, :find_widget, :find
+  def_delegator :@finder, :find_all_widgets, :find_all
 
   attr_accessor :config
-  attr_reader :parent, :childs, :ids, :cell, :childs
+  attr_reader :parent, :ids, :cell, :childs
 
   def tk_class() end
 
@@ -48,7 +49,7 @@ class TkWrapper::Widgets::Base::Widget
 
   def initialize(config: {}, childs: [], id: nil)
     @cell = TkWrapper::Util::Tk::Cell.new(self)
-    @finder = TkWrapper::Util::Tk::Finder.new(self)
+    @finder = TkWrapper::Util::Tk::Finder.new(widgets: self)
     @config = TkWrapper::Widgets::Base::Configuration.new(config)
     @childs = childs.is_a?(Array) ? childs : [childs]
     @ids = []
@@ -97,19 +98,6 @@ class TkWrapper::Widgets::Base::Widget
     @config.merge_global_configurations(manager, self)
     @config.configure_tk_widget(tk_widget)
     @config.configure_tearoff
-  end
-
-  def check_match(matcher)
-    case matcher
-    when Regexp
-      @ids.any? { |id| if (match = matcher.match(id)) then return match end }
-    when String, Symbol
-      @ids.any? { |id| id == matcher }
-    when nil
-      true
-    else
-      is_a?(matcher)
-    end
   end
 
   def modify(matchers, &callback)
