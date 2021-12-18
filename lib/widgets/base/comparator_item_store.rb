@@ -10,8 +10,12 @@ class TkWrapper::Widgets::Base::ComparatorItemStore
     @comparator_map = {} # for lookup using comparisons by Matcher class
   end
 
+  def map_key?(key)
+    [String, Symbol].include?(key)
+  end
+
   def push(key, *items)
-    if [String, Symbol].include?(key)
+    if map_key?(key)
       (@key_map[key] ||= []).concat(items)
     else
       (@comparator_map[key] ||= []).concat(items)
@@ -23,6 +27,11 @@ class TkWrapper::Widgets::Base::ComparatorItemStore
     widget.ids.reduce([]) do |items, id|
       items + items_from_key_map(id) + items_from_comparator_map(id, widget)
     end
+  end
+
+  def [](key)
+    items = map_key?(key) ? @key_map[key] : @comparator_map[key]
+    items&.length == 1 ? items.first : items
   end
 
   private

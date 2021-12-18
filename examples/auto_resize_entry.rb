@@ -29,6 +29,7 @@ Root.new(
   config: { grid: :onecell },
   childs: Frame.new(
     ids: :container,
+    config: { style: 'Visible.TFrame' },
     childs: AutoResizeEntry.new(
       config: { grid: { column: 0, row: 0, sticky: 'nw' } }
     )

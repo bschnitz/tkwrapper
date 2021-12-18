@@ -10,4 +10,5 @@ Gem::Specification.new do |s|
   s.files                 = Dir['lib/**/*']
   s.homepage              = 'https://github.com/bschnitz/tkwrapper'
   s.license               = 'MIT'
+  s.add_dependency          'tk', '~> 0.4'
 end

@@ -31,4 +31,8 @@ class TkWrapper::Widgets::Base::Matches
     else        @matches[key]
     end
   end
+
+  def first
+    @matches.first&.[](1)
+  end
 end

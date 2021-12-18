@@ -1,13 +1,18 @@
 # frozen_string_literal: true
 
 require_relative 'comparator_item_store'
+require_relative 'widget_store'
 
 class TkWrapper::Widgets::Base::Manager
   ComparatorItemStore = TkWrapper::Widgets::Base::ComparatorItemStore
+  WidgetStore = TkWrapper::Widgets::Base::WidgetStore
+
+  attr_reader :widgets
 
   def initialize
     @configurations = ComparatorItemStore.new
     @modifications = ComparatorItemStore.new
+    @widgets = WidgetStore.new
   end
 
   def add_configurations(matcher = nil, configuration = nil, **configurations)

@@ -72,8 +72,13 @@ root.find_all(/label_(.*)/).each do |(widget, key, match)|
   widget.tk_widget['background'] = match[1]
 end
 
-matches = root.find_all(%i[one two])
+# The manager can also be used and is more performant when working on
+# Symbol/String ids
+matches = manager.widgets.find_all(%i[one two])
 matches[:one].tk_widget.text = '1'
 matches[:two].tk_widget.text = '2'
+
+# directly accessing the widget lookup of the manager
+manager.widgets[:one].tk_widget.text = 'one'
 
 Tk.mainloop

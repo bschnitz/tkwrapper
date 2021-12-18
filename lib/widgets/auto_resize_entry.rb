@@ -5,8 +5,8 @@ class TkWrapper::Widgets::AutoResizeEntry < TkWrapper::Widgets::Entry
   attr_accessor :min_width, :add_width
 
   def initialize(**args)
-    @min_width = args[:config][:min_width] || 0
-    @add_width = args[:config][:add_width] || 0
+    @min_width = args.dig(:config, :min_width) || 0
+    @add_width = args.dig(:config, :add_width) || 0
     super(**args)
   end
 
@@ -27,7 +27,7 @@ class TkWrapper::Widgets::AutoResizeEntry < TkWrapper::Widgets::Entry
   end
 
   def resize
-    max_width = @cell.bbox[2]
+    max_width = [@cell.bbox[2], 0].max
     text_width = @font.measure(value)
     new_width = [[@min_width, text_width + @add_width].max, max_width].min
     tk_widget.width = 0

@@ -2,3 +2,4 @@
 - multiple 'ids' for a widget
 - xpath like id handling
 - add other widgets
+- better module / class design

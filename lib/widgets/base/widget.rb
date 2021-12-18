@@ -49,6 +49,7 @@ class TkWrapper::Widgets::Base::Widget
     @config.merge(*@manager.configurations(self)) if @manager
     self.configure if configure
     @manager&.execute_modifications(self)
+    @manager&.widgets&.push(self)
     @childs.each { |child| child.build(self, manager: @manager) }
   end
 

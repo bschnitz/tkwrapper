@@ -2,7 +2,12 @@
 
 LIB_DIR = __dir__
 
-module TkWrapper end
+module TkWrapper
+  module Util
+    module Tk
+    end
+  end
+end
 
 require_relative 'widgets/widgets'
 
