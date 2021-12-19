@@ -15,6 +15,7 @@ class TkWrapper::Util::Tk::Finder
   end
 
   def iter(comparators, widgets = @widgets, lookup = @lookup)
+    comparators = [comparators] unless comparators.is_a?(Array)
     Enumerator.new do |y|
       comparators = each_widget_lookup_match(lookup, comparators) { |m| y << m }
       each_widget_comparator_match(widgets, comparators) { |m| y << m }
@@ -33,7 +34,6 @@ class TkWrapper::Util::Tk::Finder
   private
 
   def create_value_matchers(comparators)
-    comparators = [comparators] unless comparators.is_a?(Array)
     comparators.map { |comparator| Matcher.new(comparator: comparator) }
   end
 

@@ -26,7 +26,7 @@ class TkWrapper::Widgets::Base::WidgetStore
   end
 
   def [](key)
-    @lookup[key].size == 1 ? @lookup[key].first : @lookup[key]
+    @lookup[key]&.size == 1 ? @lookup[key].first : @lookup[key]
   end
 
   private

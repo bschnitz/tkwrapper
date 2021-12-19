@@ -41,6 +41,10 @@ class TkWrapper::Widgets::Base::Widget
     (@tk_widget = create_tk_widget(parent)) || parent&.tk_widget
   end
 
+  def build_childs
+    @childs.each { |child| child.build(self, manager: @manager) }
+  end
+
   def build(parent, configure: true, manager: nil)
     @parent = parent
     tk_widget # creates the widget if possible and not yet created
@@ -50,7 +54,7 @@ class TkWrapper::Widgets::Base::Widget
     self.configure if configure
     @manager&.execute_modifications(self)
     @manager&.widgets&.push(self)
-    @childs.each { |child| child.build(self, manager: @manager) }
+    build_childs
   end
 
   def configure
@@ -69,6 +73,6 @@ class TkWrapper::Widgets::Base::Widget
 
   def push(child)
     @childs.push(child)
-    child.build(self)
+    child.build(self, manager: @manager)
   end
 end
