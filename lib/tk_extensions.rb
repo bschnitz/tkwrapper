@@ -26,12 +26,13 @@ module TkExtensions
     # the class names may be aliases (e.g. Tk::Tile::Entry is an alias for
     # Tk::Tile::TEntry)
     tk_class_names = [
-      'TkRoot',          # becomes TkExtensions::TkRoot
-      'TkText',          # becomes TkExtensions::TkText
-      'TkMenu',          # becomes TkExtensions::TkMenu
-      'Tk::Tile::Entry', # becomes TkExtensions::Entry
-      'Tk::Tile::Frame', # becomes TkExtensions::Frame
-      'Tk::Tile::Label'  # becomes TkExtensions::Label
+      'TkRoot',           # becomes TkExtensions::TkWidgets::TkRoot
+      'TkText',           # becomes TkExtensions::TkWidgets::TkText
+      'TkMenu',           # becomes TkExtensions::TkWidgets::TkMenu
+      'Tk::Tile::Entry',  # becomes TkExtensions::TkWidgets::Entry
+      'Tk::Tile::Frame',  # becomes TkExtensions::TkWidgets::Frame
+      'Tk::Tile::Label',  # becomes TkExtensions::TkWidgets::Label
+      'Tk::Tile::Button'  # becomes TkExtensions::TkWidgets::Button
     ]
     tk_class_names.each do |tk_class_name|
       # extract last part of the name (e.g. Tk::Tile::Entry => Entry)

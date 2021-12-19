@@ -32,7 +32,7 @@ manager.config(
     grid: { row: 2, column: 0 }
   },
 
-  l6: {
+  show_button: {
     grid: { row: 2, column: 1 }
   }
 )
@@ -54,11 +54,19 @@ manager.widgets[:m1].mount(Label.new(ids: :l1))
 manager.widgets[:m2].mount(Label.new(ids: :l2))
 manager.widgets[:m3].mount(Label.new(ids: :l3))
 manager.widgets[:m4].mount(Label.new(ids: :l4))
-manager.widgets[:m5].mount(Label.new(ids: :l5))
-manager.widgets[:m6].mount(Label.new(ids: :l6))
+#manager.widgets[:m5].mount(Label.new(ids: :l5))
+manager.widgets[:m6].mount(Button.new(ids: :show_button))
 
 manager.widgets.iter(Label).each do |match|
   match.tk_widget.text = match.widget.ids[0]
+end
+
+manager.widgets[:show_button].tk_widget.text = 'Mount new Widget!'
+manager.widgets[:show_button].tk_widget.command = proc do
+  unless manager.widgets[:l5]
+    manager.widgets[:m5].mount(Label.new(ids: :l5))
+    manager.widgets[:l5].tk_widget.text = 'I\'m here!'
+  end
 end
 
 Tk.mainloop
