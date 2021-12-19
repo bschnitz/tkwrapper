@@ -6,7 +6,7 @@ require_relative 'comparator_item_store'
 class TkWrapper::Widgets::Base::WidgetStore
   extend Forwardable
 
-  def_delegators :@finder, :find, :find_all
+  def_delegators :@finder, :find, :find_all, :iter
 
   def initialize
     @lookup = {}

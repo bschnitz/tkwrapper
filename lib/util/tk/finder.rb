@@ -14,7 +14,7 @@ class TkWrapper::Util::Tk::Finder
     @widgets = widgets
   end
 
-  def find_each(comparators, widgets = @widgets, lookup = @lookup)
+  def iter(comparators, widgets = @widgets, lookup = @lookup)
     Enumerator.new do |y|
       comparators = each_widget_lookup_match(lookup, comparators) { |m| y << m }
       each_widget_comparator_match(widgets, comparators) { |m| y << m }
@@ -22,11 +22,11 @@ class TkWrapper::Util::Tk::Finder
   end
 
   def find(comparators, widgets = @widgets, lookup = @lookup)
-    find_each(comparators, widgets, lookup, &:itself).first
+    iter(comparators, widgets, lookup, &:itself).first
   end
 
   def find_all(comparators, widgets = @widgets, lookup = @lookup)
-    it = find_each(comparators, widgets, lookup, &:itself)
+    it = iter(comparators, widgets, lookup, &:itself)
     it.each_with_object(Matches.new) { |match, matches| matches.push(match) }
   end
 

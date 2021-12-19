@@ -1,5 +1,6 @@
-- performance improvement for id handling
-- multiple 'ids' for a widget
-- xpath like id handling
-- add other widgets
-- better module / class design
+- [ ] AutoResizeEntry: toggle auto-resize on/off
+- [ ] xpath like id handling
+- [ ] add other widgets
+- [ ] better module / class design
+- [X] multiple 'ids' for a widget
+- [X] performance improvement for id handling

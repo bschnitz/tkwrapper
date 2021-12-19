@@ -81,4 +81,9 @@ matches[:two].tk_widget.text = '2'
 # directly accessing the widget lookup of the manager
 manager.widgets[:one].tk_widget.text = 'one'
 
+puts "\nManager.iter"
+manager.widgets.iter(%i[one two]).each do |match|
+  puts match
+end
+
 Tk.mainloop
