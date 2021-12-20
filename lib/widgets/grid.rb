@@ -11,10 +11,12 @@ class TkWrapper::Widgets::Grid < TkWrapper::Widgets::Base::Widget
   end
 
   def initialize(**arguments)
+    parent = arguments.delete(:parent)
     super(**arguments)
     @childs.map! { |row| row.is_a?(Array) ? row : [row] }
     configure_cells_for_grid
     @childs.flatten! && @childs.select! { |cell| cell.is_a?(Widget) }
+    parent&.push(self)
   end
 
   def configure_cells_for_grid

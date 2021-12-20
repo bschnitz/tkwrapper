@@ -17,7 +17,7 @@ class TkWrapper::Widgets::Base::Widget
 
   def tk_class() end
 
-  def initialize(config: {}, childs: [], manager: nil, ids: [])
+  def initialize(parent: nil, config: {}, childs: [], manager: nil, ids: [])
     @cell = TkWrapper::Util::Tk::Cell.new(self)
     @winfo = TkWrapper::Widgets::Base::WindowInfo.new(self)
     @finder = TkWrapper::Util::Tk::Finder.new(widgets: self)
@@ -25,6 +25,7 @@ class TkWrapper::Widgets::Base::Widget
     @childs = childs.is_a?(Array) ? childs : [childs]
     @manager = manager
     @ids = ids.is_a?(Array) ? ids : [ids]
+    parent&.push(self)
   end
 
   def create_tk_widget(parent)

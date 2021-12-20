@@ -25,10 +25,10 @@ class TkWrapper::Widgets::Base::Matches
   end
 
   def [](key)
-    case @matches[key].size
-    when 0 then nil
-    when 1 then @matches[key][0]
-    else        @matches[key]
+    case @matches[key]&.size
+    when 0, nil then nil
+    when 1      then @matches[key][0]
+    else             @matches[key]
     end
   end
 
