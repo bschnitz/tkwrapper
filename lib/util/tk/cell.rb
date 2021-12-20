@@ -17,6 +17,7 @@ class TkWrapper::Util::Tk::Cell
     start_row = grid_info['row']
     end_row = start_row + grid_info['rowspan'] - 1
 
+    container.tk_widget.update
     TkGrid.bbox(container.tk_widget, start_col, start_row, end_col, end_row)
   end
 

@@ -89,8 +89,10 @@ class TkWrapper::Widgets::Base::Configuration
       next if NON_TK_OPTIONS.include?(option)
 
       case option
-      when :grid then configure_grid(tk_widget)
-      else            tk_widget[option] = value
+      when :grid  then configure_grid(tk_widget)
+      when :pack  then tk_widget.pack(value)
+      when :place then tk_widget.place(value)
+      else             tk_widget[option] = value
       end
     end
 

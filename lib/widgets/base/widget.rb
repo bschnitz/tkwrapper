@@ -3,6 +3,7 @@ require "#{LIB_DIR}/util/tk/finder"
 require "#{LIB_DIR}/tk_extensions"
 
 require_relative 'base'
+require_relative 'window_info'
 
 class TkWrapper::Widgets::Base::Widget
   extend Forwardable
@@ -12,12 +13,13 @@ class TkWrapper::Widgets::Base::Widget
   def_delegators :@finder, :find, :find_all
 
   attr_accessor :config
-  attr_reader :parent, :ids, :cell, :childs, :manager
+  attr_reader :parent, :ids, :cell, :childs, :manager, :winfo
 
   def tk_class() end
 
   def initialize(config: {}, childs: [], manager: nil, ids: [])
     @cell = TkWrapper::Util::Tk::Cell.new(self)
+    @winfo = TkWrapper::Widgets::Base::WindowInfo.new(self)
     @finder = TkWrapper::Util::Tk::Finder.new(widgets: self)
     @config = TkWrapper::Widgets::Base::Configuration.new(config)
     @childs = childs.is_a?(Array) ? childs : [childs]
@@ -30,7 +32,7 @@ class TkWrapper::Widgets::Base::Widget
 
     return unless tk_class
 
-    parent&.tk_widget ? tk_class.new(parent.tk_widget) : tk_class.new
+    tk_class.new(parent&.tk_widget)
   end
 
   # if parent is provided and self has no tk_class, the tk_widget of the

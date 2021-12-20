@@ -47,6 +47,10 @@ class TkWrapper::Widgets::Base::Manager
     widget.config.merge(*configurations(widget))
   end
 
+  def tk_widget(id)
+    @widgets[id].tk_widget
+  end
+
   alias modify add_modification
   alias config add_configurations
 end

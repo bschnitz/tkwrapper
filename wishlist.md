@@ -2,5 +2,6 @@
 - [ ] xpath like id handling
 - [ ] add other widgets
 - [ ] better module / class design
+- [ ] provide some options directly when creating the tk widget
 - [X] multiple 'ids' for a widget
 - [X] performance improvement for id handling
