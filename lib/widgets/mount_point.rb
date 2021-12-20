@@ -2,18 +2,7 @@
 
 class TkWrapper::Widgets::MountPoint < TkWrapper::Widgets::Base::Widget
   def initialize(**args)
-    raise use_no_config_for_mount_point_error if args['config']
-
-    @build_args = {}
-
     super(**args)
-  end
-
-  def use_no_config_for_mount_point_error
-    ArgumentError.new(
-      'Don\'t use the config argument for MountPoint. ' \
-      'Use it on the mounted childs.'
-    )
   end
 
   def build_childs(skip: true)
@@ -27,6 +16,9 @@ class TkWrapper::Widgets::MountPoint < TkWrapper::Widgets::Base::Widget
   def mount(childs = nil)
     if childs
       @childs = childs.is_a?(Array) ? childs : [childs]
+    end
+    @childs.each do |child|
+      child.config.merge(@config)
     end
     build_childs(skip: false)
   end

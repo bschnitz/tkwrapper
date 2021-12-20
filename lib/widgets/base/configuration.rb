@@ -77,17 +77,21 @@ class TkWrapper::Widgets::Base::Configuration
     @config[:grid].reject { |option, _| NON_TK_OPTIONS.include?(option) }
   end
 
+  def configure_grid(tk_widget)
+    grid = grid(only_tk_options: true)
+    return if grid.empty?
+
+    tk_widget.grid(grid)
+  end
+
   def configure_tk_widget(tk_widget)
     @config.each do |option, value|
       next if NON_TK_OPTIONS.include?(option)
 
-      if option == :grid
-        grid = grid(only_tk_options: true)
-        next if grid.empty?
-        next tk_widget.grid(grid) if option == :grid
+      case option
+      when :grid then configure_grid(tk_widget)
+      else            tk_widget[option] = value
       end
-
-      tk_widget[option] = value
     end
 
     configure_weights(tk_widget)

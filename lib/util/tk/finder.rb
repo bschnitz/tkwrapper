@@ -55,7 +55,8 @@ class TkWrapper::Util::Tk::Finder
     matchers = create_value_matchers(comparators)
 
     widgets.each do |widget|
-      widget.ids.each do |id|
+      ids = widget.ids.empty? ? [nil] : widget.ids
+      ids.each do |id|
         matchers.each do |matcher|
           (match = matcher.match(id, widget)) && block.call(match)
         end

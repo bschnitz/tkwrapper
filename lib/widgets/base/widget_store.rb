@@ -17,6 +17,7 @@ class TkWrapper::Widgets::Base::WidgetStore
     widget.ids.each do |id|
       (@lookup[id] ||= []).push(widget)
     end
+    (@lookup[nil] ||= []).push(widget) if widget.ids.empty?
   end
 
   def each(&block)
