@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'tkextlib/tile'
+
 # classification of TkGrid
 class TkWrapper::Widgets::Grid < TkWrapper::Widgets::Base::Widget
   attr_reader :parent, :matrix
@@ -7,7 +9,7 @@ class TkWrapper::Widgets::Grid < TkWrapper::Widgets::Base::Widget
   Widget = TkWrapper::Widgets::Base::Widget
 
   def tk_class
-    TkWidgets::Frame
+    Tk::Tile::Frame
   end
 
   def initialize(**arguments)

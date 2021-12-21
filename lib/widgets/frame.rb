@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
+require 'tkextlib/tile'
+
 class TkWrapper::Widgets::Frame < TkWrapper::Widgets::Base::Widget
   def tk_class
-    TkWidgets::Frame
+    Tk::Tile::Frame
   end
 end

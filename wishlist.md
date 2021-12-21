@@ -1,4 +1,6 @@
 - [ ] AutoResizeEntry: toggle auto-resize on/off
+- [ ] AutoResizeEntry: get rid of additional space
+- [ ] example for inheritance fom a widget
 - [ ] xpath like id handling
 - [ ] add other widgets
 - [ ] better module / class design

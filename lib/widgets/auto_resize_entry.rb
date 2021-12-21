@@ -12,7 +12,7 @@ class TkWrapper::Widgets::AutoResizeEntry < TkWrapper::Widgets::Entry
 
   def build(parent, **args)
     super(parent, **args)
-    parent.tk_widget.bind('Configure') { resize }
+    parent.bind('Configure') { resize }
     tk_widget.textvariable = TkVariable.new unless tk_widget.textvariable
     tk_widget.textvariable.trace('write') { resize }
     resize

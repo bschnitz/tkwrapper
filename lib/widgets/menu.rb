@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
+require 'tk'
+
 class TkWrapper::Widgets::Menu < TkWrapper::Widgets::Base::Widget
   def tk_class
-    TkWidgets::TkMenu
+    TkMenu
   end
 
   def build(parent, **args)
@@ -12,7 +14,7 @@ class TkWrapper::Widgets::Menu < TkWrapper::Widgets::Base::Widget
 
   class Cascade < TkWrapper::Widgets::Base::Widget
     def tk_class
-      TkWidgets::TkMenu
+      TkMenu
     end
 
     def build(parent, **args)

@@ -28,14 +28,14 @@ class TkWrapper::Widgets::Base::Configuration
     @config = parse_and_clone(config)
   end
 
-  def merge(*configurations)
+  def merge(*configurations, overwrite: true)
     configurations = configurations.map do |configuration|
       configuration = configuration.config if configuration.is_a?(self.class)
 
       parse_and_clone(configuration)
     end
 
-    Util.merge_recursive!(@config, *configurations)
+    Util.merge_recursive!(@config, *configurations, overwrite: overwrite)
   end
 
   def [](key)

@@ -39,7 +39,7 @@ class TkWrapper::Widgets::Base::Matcher
     when String, Symbol then match_string(value, comparator, widget)
     when Regexp         then match_regex(value, comparator, widget)
     when Class          then match_class(value, comparator, widget)
-    when nil            then Match(value, { widget: widget })
+    when nil            then Match.new(value, widget: widget)
     else                     false
     end
   end

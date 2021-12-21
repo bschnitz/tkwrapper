@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'tk'
+
 class TkWrapper::Widgets::Root < TkWrapper::Widgets::Base::Widget
   def initialize(**arguments)
     super(**arguments)
@@ -7,6 +9,6 @@ class TkWrapper::Widgets::Root < TkWrapper::Widgets::Base::Widget
   end
 
   def tk_class
-    TkWidgets::TkRoot
+    TkRoot
   end
 end
