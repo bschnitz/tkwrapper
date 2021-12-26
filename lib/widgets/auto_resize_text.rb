@@ -28,8 +28,17 @@ class TkWrapper::Widgets::AutoResizeText < TkWrapper::Widgets::Frame
     @text.bind('<Modified>', &method(:autoresize))
     TkGrid.propagate(tk_widget, 0)
     resize(lines: @min_number_lines, chars: @min_number_chars)
-    #@text.resize(lines: @min_number_lines, chars: @min_number_chars)
   end
+
+  def resize(height: nil, width: nil, lines: nil, chars: nil)
+    width  = width_needed_for_chars(chars)  if chars
+    height = height_needed_for_lines(lines) if lines
+
+    opts.width  = width  if width
+    opts.height = height if height
+  end
+
+  private
 
   # width of cursor + borders (textfield + frame) + padding (textfield + frame)
   def additional_width_needed_for_textfield
@@ -50,14 +59,6 @@ class TkWrapper::Widgets::AutoResizeText < TkWrapper::Widgets::Frame
 
   def height_needed_for_lines(num_lines)
     @text.height_of_lines(num_lines) + additional_height_needed_for_textfield
-  end
-
-  def resize(height: nil, width: nil, lines: nil, chars: nil)
-    width  = width_needed_for_chars(chars)  if chars
-    height = height_needed_for_lines(lines) if lines
-
-    opts.width  = width  if width
-    opts.height = height if height
   end
 
   def width_needed_for_textfield
