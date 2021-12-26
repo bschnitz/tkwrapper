@@ -44,7 +44,7 @@ class TkWrapper::Widgets::Text < TkWrapper::Widgets::Base::Widget
     @font.linespace + opts.spacing1 + opts.spacing3
   end
 
-  def height_of_lines(num_lines = lines.size)
+  def height_of_lines(num_lines = count_lines)
     h = num_lines * line_height_including_padding
 
     # spacing 3: additional space between lines
