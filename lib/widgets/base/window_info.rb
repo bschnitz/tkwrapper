@@ -10,4 +10,8 @@ class TkWrapper::Widgets::Base::WindowInfo
       super
     end
   end
+
+  def respond_to_missing?(name, *)
+    @widget.tk_widget.respond_to?("winfo_#{name}") || super
+  end
 end

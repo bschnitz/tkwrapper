@@ -10,7 +10,8 @@ require_relative '../lib/tkwrapper'
 include TkWrapper
 include TkWrapper::Widgets
 
-Tk::Tile::Style.configure('Visible.TFrame', { background: '#e784e7' })
+Tk::Tile::Style.configure('Visible.TFrame', { background: '#B8F058' })
+Tk::Tile::Style.configure('Outer.TFrame', { background: '#B470D2' })
 Tk::Tile::Style.configure('Border.TFrame', { borderwidth: 2 })
 
 manager = Manager.new
@@ -29,9 +30,9 @@ Root.new(
   config: { grid: :onecell },
   childs: Frame.new(
     ids: :container,
-    config: { style: 'Visible.TFrame' },
+    config: { style: 'Outer.TFrame', grid: { weights: { rows: [1], cols: [1] } } },
     childs: AutoResizeText.new(
-      config: { grid: { column: 0, row: 0, sticky: 'new' } }
+      config: { grid: { column: 0, row: 0, sticky: 'nw' }, width: 200, height: 200, style: 'Visible.TFrame' }
     )
   )
 )

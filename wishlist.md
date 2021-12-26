@@ -5,5 +5,8 @@
 - [ ] add other widgets
 - [ ] better module / class design
 - [ ] provide some options directly when creating the tk widget
+- [ ] if build is overwritten in child, correct after/before build behaviour
+- [ ] remove flickering from autoresize of text field
+- [ ] repair autoresize behaviour for new last line
 - [X] multiple 'ids' for a widget
 - [X] performance improvement for id handling

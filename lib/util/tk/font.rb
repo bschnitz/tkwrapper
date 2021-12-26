@@ -48,4 +48,18 @@ class TkWrapper::Util::Tk::Font
   def update
     @tk_widget.font = TkFont.new(@config)
   end
+
+  def char_width
+    measure('0')
+  end
+
+  def linespace
+    metrics['linespace']
+  end
+
+  def metrics
+    @tk_widget.font.metrics.each_with_object({}) do |(key, value), metrics|
+      metrics[key] = value
+    end
+  end
 end
