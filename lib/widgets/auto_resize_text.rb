@@ -52,11 +52,6 @@ class TkWrapper::Widgets::AutoResizeText < TkWrapper::Widgets::Frame
     @text.height_of_lines(num_lines) + additional_height_needed_for_textfield
   end
 
-  def resize_width
-    opts.width = width_needed_for_textfield
-    @parent.tk_widget.update
-  end
-
   def resize(height: nil, width: nil, lines: nil, chars: nil)
     width  = width_needed_for_chars(chars)  if chars
     height = height_needed_for_lines(lines) if lines
