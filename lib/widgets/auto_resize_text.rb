@@ -16,7 +16,7 @@ class TkWrapper::Widgets::AutoResizeText < TkWrapper::Widgets::Frame
   end
 
   def create_childs
-    @text = Text.new(config: {
+    @text = TkWrapper::Widgets::Text.new(config: {
       grid:   { sticky: 'nsew' },
       width:  @min_number_chars,
       height: @min_number_lines
