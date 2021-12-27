@@ -3,6 +3,10 @@
 require_relative 'text'
 
 class TkWrapper::Widgets::AutoResizeText < TkWrapper::Widgets::Frame
+  extend Forwardable
+
+  def_delegators :text, :value, :value=
+
   attr_reader :text
 
   def initialize(**args)
