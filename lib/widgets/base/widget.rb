@@ -4,6 +4,7 @@ require "#{LIB_DIR}/util/tk/finder"
 require_relative 'base'
 require_relative 'window_info'
 require_relative 'tk_options'
+require_relative 'visibility'
 
 class TkWrapper::Widgets::Base::Widget
   extend Forwardable
@@ -15,7 +16,8 @@ class TkWrapper::Widgets::Base::Widget
   def_delegator :@manager, :widgets, :managed
 
   attr_accessor :config
-  attr_reader :parent, :ids, :cell, :childs, :manager, :winfo, :opts, :font
+  attr_reader :parent, :ids, :cell, :childs, :manager, :winfo, :opts, :font,
+              :visibility
 
   def tk_class() end
 
@@ -31,10 +33,11 @@ class TkWrapper::Widgets::Base::Widget
   end
 
   def initialize_utilities
-    @cell   = TkWrapper::Util::Tk::Cell.new(self)
-    @winfo  = TkWrapper::Widgets::Base::WindowInfo.new(self)
-    @opts   = TkWrapper::Widgets::Base::TkOptions.new(self)
-    @finder = TkWrapper::Util::Tk::Finder.new(widgets: self)
+    @cell       = TkWrapper::Util::Tk::Cell.new(self)
+    @winfo      = TkWrapper::Widgets::Base::WindowInfo.new(self)
+    @opts       = TkWrapper::Widgets::Base::TkOptions.new(self)
+    @finder     = TkWrapper::Util::Tk::Finder.new(widgets: self)
+    @visibility = TkWrapper::Widgets::Base::Visibility.new(self)
   end
 
   def init_id(id)
