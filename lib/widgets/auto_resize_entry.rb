@@ -5,8 +5,9 @@ class TkWrapper::Widgets::AutoResizeEntry < TkWrapper::Widgets::Entry
   attr_accessor :min_width, :add_width
 
   def initialize(**args)
-    @min_width = args.dig(:config, :min_width) || 0
-    @add_width = args.dig(:config, :add_width) || 0
+    @min_width    = args.dig(:config, :min_width)    || 0
+    @add_width    = args.dig(:config, :add_width)    || 0
+    @delay_update = args.dig(:config, :delay_update) || 0
     super(**args)
   end
 
@@ -15,7 +16,7 @@ class TkWrapper::Widgets::AutoResizeEntry < TkWrapper::Widgets::Entry
     parent.bind('Configure') { resize }
     tk_widget.textvariable = TkVariable.new unless tk_widget.textvariable
     tk_widget.textvariable.trace('write') { resize }
-    resize
+    resize(delay_update: @delay_update)
   end
 
   def value=(value)
@@ -26,12 +27,12 @@ class TkWrapper::Widgets::AutoResizeEntry < TkWrapper::Widgets::Entry
     tk_widget.textvariable.value
   end
 
-  def resize
+  def resize(delay_update: false)
     max_width = [@cell.bbox[2], 0].max
     text_width = @font.measure(value)
     new_width = [[@min_width, text_width + @add_width].max, max_width].min
     tk_widget.width = 0
     tk_widget.grid(ipadx: new_width / 2.0)
-    @parent.tk_widget.update
+    @parent.tk_widget.update unless delay_update
   end
 end

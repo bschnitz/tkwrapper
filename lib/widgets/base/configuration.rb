@@ -21,7 +21,7 @@ class TkWrapper::Widgets::Base::Configuration
   }.freeze
 
   NON_TK_OPTIONS = %i[
-    tk_class tearoff weights menu min_width add_width
+    tk_class tearoff weights menu min_width add_width delay_update
   ].freeze
 
   def initialize(config)
