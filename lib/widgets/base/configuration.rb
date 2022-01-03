@@ -21,7 +21,7 @@ class TkWrapper::Widgets::Base::Configuration
   }.freeze
 
   NON_TK_OPTIONS = %i[
-    tk_class tearoff weights menu min_width add_width delay_update
+    tk_class tearoff weights menu min_width add_width delay_update hidden
   ].freeze
 
   def initialize(config)
@@ -84,19 +84,28 @@ class TkWrapper::Widgets::Base::Configuration
     tk_widget.grid(grid)
   end
 
-  def configure_tk_widget(tk_widget)
+  def configure_widget(widget)
     @config.each do |option, value|
       next if NON_TK_OPTIONS.include?(option)
 
       case option
-      when :grid  then configure_grid(tk_widget)
-      when :pack  then tk_widget.pack(value)
-      when :place then tk_widget.place(value)
-      else             tk_widget[option] = value
+      when :grid  then configure_grid(widget.tk_widget)
+      when :pack  then widget.tk_widget.pack(value)
+      when :place then widget.tk_widget.place(value)
+      else             widget.tk_widget[option] = value
       end
     end
 
-    configure_weights(tk_widget)
+    configure_non_tk_options(widget)
+  end
+
+  def configure_non_tk_options(widget)
+    configure_weights(widget.tk_widget)
+    configure_hidden(widget)
+  end
+
+  def configure_hidden(widget)
+    widget.visibility.hide if @config[:hidden]
   end
 
   def configure_weights(tk_widget)

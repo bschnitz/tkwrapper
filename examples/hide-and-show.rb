@@ -16,7 +16,7 @@ Root.new(
       ids: :grid,
       config: { grid: :fullcell },
       childs: [
-        [Button.new(ids: :toggle), Label.new(ids: :label)],
+        [Button.new(ids: :toggle), Label.new(ids: :label, config: { hidden: true })],
         [Button.new(ids: :hide), Button.new(ids: :show)]
       ]
     )

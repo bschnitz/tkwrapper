@@ -112,7 +112,7 @@ class TkWrapper::Widgets::Base::Widget
   end
 
   def configure
-    @config.configure_tk_widget(tk_widget)
+    @config.configure_widget(self)
     @config.configure_tearoff
   end
 end
